@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:13:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-20 20:38:20
+ * @LastEditTime: 2022-02-22 00:35:29
  * @FilePath: /canvas-render-html/src/utils/enum.ts
  * @Description: Coding something
  */
@@ -20,6 +20,7 @@ export enum EElementTagName {
     Img = 'IMG',
     Script = 'SCRIPT',
     Style = 'STYLE',
+    Body = 'BODY',
 }
 
 export enum EElementName {

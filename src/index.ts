@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:05:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-20 23:21:46
+ * @LastEditTime: 2022-02-22 00:38:27
  * @FilePath: /canvas-render-html/src/index.ts
  * @Description: Coding something
  */
@@ -45,16 +45,16 @@ export async function renderHtmlToCanvas ({
 
     console.log(body);
 
-    application.stage.addChild(body.container);
+    application.stage.addChild(body._container);
 }
 
 renderHtmlToCanvas({
     html: /* html*/`
     <div style='1' id='2' class=3>
-        <span>span</span>
-        div
+       111
     </div>
-    222
-    <span>333</span>
 `
+// div
+    // 222
+    // <span>333</span>
 });

@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:55:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-20 21:06:40
+ * @LastEditTime: 2022-02-22 01:34:09
  * @FilePath: /canvas-render-html/src/packages/dom/parser/parser.ts
  * @Description: Coding something
  */
@@ -32,10 +32,11 @@ export async function parseHtml (htmlString: string): Promise<BodyElement> {
             ontext (text) {
                 const textNode = createTextNode();
                 textNode.textContent = text;
-                parent.appendChild(textNode);
+                parent._appendText(textNode);
                 console.log('ontext', text);
             },
             onclosetag (tagname) {
+                parent._onParseComplete();
                 if (parent.parentElement)
                     parent = parent.parentElement;
                 console.log(tagname);

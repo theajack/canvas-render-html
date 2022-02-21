@@ -11,7 +11,7 @@ import {EElementName} from '@src/utils/enum';
 import {BodyElement} from './component/body';
 import {DivElement} from './component/div';
 import {SpanElement} from './component/span';
-import {TextNode} from './textNode';
+import {TextNode} from './text-node';
 
 export function createElement (name: EElementName) {
     switch (name) {
