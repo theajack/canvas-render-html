@@ -50,6 +50,6 @@ export class TextNode extends Node {
     }
 
     _updateStyle () {
-        this.parentElement?.style._applyToTextNode(this);
+        this.parentElement?.style._inheritToChildText(this);
     }
 }

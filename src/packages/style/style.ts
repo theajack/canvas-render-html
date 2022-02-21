@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-22 01:54:04
+ * @LastEditTime: 2022-02-22 01:58:07
  * @FilePath: /canvas-render-html/src/packages/style/style.ts
  * @Description: Coding something
  */
@@ -93,13 +93,14 @@ export class Style implements IStyle {
         this._element = parent;
     }
 
-    _applyToTextNode (node: TextNode) {
+    _inheritToChildText (node: TextNode) {
         INHERIT_STYLES.forEach((key) => {
             const value = this._getStyle(key);
             node._setStyle(key, value);
         });
     }
-    _applyToElement (node: Element) {
+    
+    _inheritToChildElement (node: Element) {
         INHERIT_STYLES.forEach((key) => {
             if (typeof this._store[key] === 'undefined') { // 继承不覆盖element本身的样式
                 const value = this._getStyle(key);

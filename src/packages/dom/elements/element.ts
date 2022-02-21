@@ -107,6 +107,6 @@ export abstract class Element extends Node {
         }
     }
     _updateStyle () {
-        this.parentElement?.style._applyToElement(this);
+        this.parentElement?.style._inheritToChildElement(this);
     }
 }
