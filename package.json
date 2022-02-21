@@ -1,0 +1,71 @@
+{
+    "name": "canvas-render-html",
+    "version": "0.0.1",
+    "description": "canvas-render-html",
+    "scripts": {
+        "dev": "webpack-dev-server --open --config webpack-config/dev.js",
+        "build-web": "webpack --config webpack-config/build-web.js",
+        "lint": "eslint src --ext js",
+        "publish": "npm publish npm",
+        "build": "node ./helper/build.js",
+        "jest": "jest"
+    },
+    "author": "theajack",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/theajack/canvas-render-html"
+    },
+    "keywords": [
+        "canvas-render-html"
+    ],
+    "license": "MIT",
+    "devDependencies": {
+        "@babel/core": "^7.6.4",
+        "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+        "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+        "@babel/preset-env": "^7.6.3",
+        "@commitlint/cli": "^8.2.0",
+        "@commitlint/config-conventional": "^8.2.0",
+        "@types/jest": "^26.0.23",
+        "@typescript-eslint/eslint-plugin": "^2.14.0",
+        "@typescript-eslint/parser": "^2.14.0",
+        "babel-eslint": "^10.0.3",
+        "babel-loader": "^8.0.6",
+        "babel-plugin-transform-object-rest-spread": "^6.26.0",
+        "chalk": "^4.1.1",
+        "copy-webpack-plugin": "^6.2.1",
+        "css-loader": "^5.2.5",
+        "eslint": "^6.8.0",
+        "eslint-config-standard": "^14.1.0",
+        "eslint-loader": "^3.0.2",
+        "eslint-plugin-import": "^2.18.2",
+        "eslint-plugin-jest": "^24.3.6",
+        "eslint-plugin-node": "^10.0.0",
+        "eslint-plugin-promise": "^4.2.1",
+        "gulp": "^4.0.2",
+        "gulp-markdown-toc": "^1.1.0",
+        "husky": "^3.0.9",
+        "jest": "^27.0.1",
+        "less": "^3.9.0",
+        "less-loader": "^5.0.0",
+        "lint-staged": "^9.4.2",
+        "single-line-log": "^1.1.2",
+        "style-loader": "^2.0.0",
+        "ts-jest": "^27.0.1",
+        "ts-loader": "^6.2.1",
+        "typescript": "^3.7.4",
+        "webpack": "^4.41.2",
+        "webpack-cli": "^3.3.9",
+        "webpack-dev-server": "^3.8.2"
+    },
+    "dependencies": {
+        "htmlparser2": "^7.2.0",
+        "pixi.js": "^6.2.2",
+        "tc-event": "^0.0.6"
+    },
+    "husky": {
+        "hooks": {
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    }
+}

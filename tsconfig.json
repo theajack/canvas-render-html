@@ -1,0 +1,40 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "outDir": "dist",
+        "sourceMap": false,
+        "target": "es5",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "allowJs": false,
+        "noUnusedLocals": true,
+        "strictNullChecks": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "experimentalDecorators": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "removeComments": false,
+        "jsx": "preserve",
+        // "jsx": "react",
+        "noEmit": false,
+        "lib": ["esnext", "dom"],
+        // "types": ["jest", "puppeteer", "node"],
+        "rootDir": ".",
+        "paths": {
+            // "testUtils":["testUtils"]
+
+            "@src/*": ["src/*"],
+            "@packages/*": ["src/packages/*"],
+            "@adapter": ["src/adapter/*"],
+            "@types/*": ["src/types/*"],
+        }
+    },
+    "include": [
+        "testUtils",
+        "./src/**/*"   
+    ],
+    "exclude": [
+        "./node_modules"
+    ]
+}
