@@ -9,6 +9,9 @@ module.exports = () => {
             path: path.resolve('./', 'public'),
             filename: 'index.min.js',
         },
+        node: {
+            fs: 'empty',
+        },
         resolve,
         externals: {},
         module: {

@@ -14,6 +14,9 @@ module.exports = () => {
             libraryExport: 'default',
             globalObject: 'this',
         },
+        node: {
+            fs: 'empty',
+        },
         resolve,
         externals: {},
         module: {

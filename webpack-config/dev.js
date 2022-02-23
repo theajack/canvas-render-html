@@ -8,6 +8,9 @@ module.exports = {
         path: path.resolve('./', 'public'),
         filename: 'bundle.js'
     },
+    node: {
+        fs: 'empty',
+    },
     resolve,
     devtool: 'eval-source-map',
     devServer: {

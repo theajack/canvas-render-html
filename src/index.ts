@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:05:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-22 00:38:27
+ * @LastEditTime: 2022-02-23 17:06:28
  * @FilePath: /canvas-render-html/src/index.ts
  * @Description: Coding something
  */
@@ -13,7 +13,13 @@ import {IRenderHtmlToCanvasOptions} from './types';
 import {injectContext} from './packages/context/context';
 import {parseHtml} from './packages/dom/parser/parser';
 
+// const obj = css.parse(`body { font-size: 12px; }`);
+
+// WIN.obj = obj;
+// WIN.css = css;
+
 const WIN = window as any;
+
 
 export async function renderHtmlToCanvas ({
     html,
@@ -50,7 +56,7 @@ export async function renderHtmlToCanvas ({
 
 renderHtmlToCanvas({
     html: /* html*/`
-    <div style='1' id='2' class=3>
+    <div style='color: #f00;font-size: 18px' id='2' class=3>
        111
     </div>
 `
