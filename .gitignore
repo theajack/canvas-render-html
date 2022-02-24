@@ -3,3 +3,5 @@
 /npm
 /public/index.min.js
 /coverage
+yarn-error.log
+yarn.lock
