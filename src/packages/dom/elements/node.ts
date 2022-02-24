@@ -2,11 +2,12 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:44
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-23 17:02:41
+ * @LastEditTime: 2022-02-24 17:40:50
  * @FilePath: /canvas-render-html/src/packages/dom/elements/node.ts
  * @Description: Coding something
  */
 
+import {IBoundary, ILayout, IStyleOptions} from '@src/types/style';
 import {ENodeType} from '@src/utils/enum';
 import {Container, Text} from 'pixi.js';
 import {Element} from './element';
@@ -15,6 +16,12 @@ export abstract class Node {
     nodeType: ENodeType;
     parentElement: Element | null;
     _container: Text | Container;
+
+    _layout: ILayout;
+
+    style: IStyleOptions;
+
+    _boundary: IBoundary;
 
     get parentNode () {
         return this.parentElement;
@@ -40,4 +47,13 @@ export abstract class Node {
     }
 
     abstract _renderStyles(): void;
+
+    _clear () {
+        this.parentElement?._pureRemoveChild(this);
+        const _this = this as any;
+        _this._layout = null;
+        _this._boundary = null;
+        _this.parentElement = null;
+        _this.style = null;
+    }
 }

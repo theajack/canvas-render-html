@@ -2,12 +2,13 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-23 17:21:21
+ * @LastEditTime: 2022-02-24 15:36:54
  * @FilePath: /canvas-render-html/src/packages/dom/style/style.ts
  * @Description: Coding something
  */
 
-import {IStyle, TStyleDisplay, IStyleOptions, TStyleKey} from '@src/types/style';
+import {IStyle, TStyleDisplay, IStyleOptions, TStyleKey, TStylePosition} from '@src/types/style';
+import {IJson} from '@src/types/util';
 import {EElementTagName, ENodeType} from '@src/utils/enum';
 import {BlockElementTags, Element} from '../elements/element';
 import {TextNode} from '../elements/text-node';
@@ -23,12 +24,68 @@ const DefaultStyle: IStyle = {
     border: '',
     opacity: '1',
     display: 'block',
+    position: 'relative',
+    left: '',
+    top: '',
 };
+
+export const TextStyleNameMap: {
+    [prop in TStyleKey]?: string;
+} = {
+    color: 'fill',
+    fontSize: 'fontSize',
+};
+
+const TEXT_STYLES: TStyleKey[] = ['color', 'fontSize'];
 
 export const INHERIT_STYLES: TStyleKey[] = ['color', 'fontSize'];
 
 function isInheritStyle (name: TStyleKey) {
     return INHERIT_STYLES.includes(name);
+}
+
+
+export class TextNodeStyle implements IStyleOptions {
+    
+    
+    display?: TStyleDisplay;
+    position?: TStylePosition;
+
+    get color () { return this._getStyle('color'); }
+    get fontSize () { return this._getStyle('fontSize'); }
+    // todo 其他可继承属性
+
+    private _getStyle (name: TStyleKey): string {
+        if (!TEXT_STYLES.includes(name)) return '';
+        return this._element.parentElement?.style[name] || '';
+    }
+
+    _element: TextNode;
+
+    constructor (element: TextNode) {
+        this._element = element;
+
+        this.display = 'inline';
+        this.position = 'relative';
+
+    }
+
+    _setStyle (name: TStyleKey) {
+        if (!TEXT_STYLES.includes(name)) return;
+        this._applyStyleIntoPixi(name);
+    }
+
+    _applyStyleIntoPixi (name: TStyleKey) {
+        const key = TextStyleNameMap[name];
+        if (key) { // 直接可以将样式映射成pixi text的样式
+            const value = this._getStyle(name);
+            if (value) {
+                (this._element._container.style as IJson)[key] = value;
+            }
+        }
+
+        // todo 其他样式
+    }
 }
 
 export class Style implements IStyle {
@@ -88,6 +145,15 @@ export class Style implements IStyle {
     get display () { return this._getStyle('display'); }
     set display (v: TStyleDisplay) { this._setStyle('display', v); }
 
+    get position () { return this._getStyle('position'); }
+    set position (v: TStylePosition) { this._setStyle('position', v); }
+
+    get left () { return this._getStyle('left'); }
+    set left (v: string) { this._setStyle('left', v); }
+
+    get top () { return this._getStyle('top'); }
+    set top (v: string) { this._setStyle('top', v); }
+
     _element: Element;
 
     constructor (element: Element) {
@@ -108,6 +174,11 @@ export class Style implements IStyle {
     _setStyleAttribute (styleStr: string, fromInit = false) {
         const style = parseStyleAttribute(styleStr);
 
+        INHERIT_STYLES.forEach(k => { // 添加继承属性
+            if (!style[k])
+                style[k] = this._getStyle(k);
+        });
+
         for (const k in style) {
             const key = k as TStyleKey;
             this._setStyle(key, style[key] as string);
@@ -124,7 +195,7 @@ export class Style implements IStyle {
             const value = this._getStyle(name);
             this._element._traverseChild(child => {
                 if (child.nodeType === ENodeType.Text) {
-                    (child as TextNode)._setStyle(name, value);
+                    (child as TextNode).style._setStyle(name);
                 } else if (child.nodeType === ENodeType.Element) {
                     const style = (child as Element).style;
                     if (typeof style._store[name] === 'undefined') { // 继承不覆盖child本身的样式
@@ -139,5 +210,10 @@ export class Style implements IStyle {
         for (const k in DefaultStyle) {
             this._applyStyleIntoPixi(k as TStyleKey);
         }
+    }
+
+    _initStyle () {
+        const str = this._element.attributes.style;
+        this._setStyleAttribute(str, true);
     }
 }

@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:05:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-23 17:06:28
+ * @LastEditTime: 2022-02-24 21:15:52
  * @FilePath: /canvas-render-html/src/index.ts
  * @Description: Coding something
  */
@@ -21,7 +21,7 @@ import {parseHtml} from './packages/dom/parser/parser';
 const WIN = window as any;
 
 
-export async function renderHtmlToCanvas ({
+export function renderHtmlToCanvas ({
     html,
     canvas,
     width,
@@ -46,7 +46,7 @@ export async function renderHtmlToCanvas ({
     injectContext('application', application);
     console.log(html);
 
-    const body = await parseHtml(html);
+    const body = parseHtml(html);
     WIN.body = body;
 
     console.log(body);
@@ -55,11 +55,23 @@ export async function renderHtmlToCanvas ({
 }
 
 renderHtmlToCanvas({
-    html: /* html*/`
-    <div style='color: #f00;font-size: 18px' id='2' class=3>
-       111
+    html: /* html*/`<span>s1</span><span>s2</span>` // <span>s3</span>
+    // <span>s2</span>
+    // <div style='color: #f00;font-size: 18px' id='1' class=3>11111</div>
+    // <div style='color: #00f;font-size: 28px' id='2' class=3>2222</div>
+    // <div style='color: #00f;font-size: 28px' id='3' class=3>3333</div>
+/*
+    <div style='color: #00f;font-size: 28px' id='2' class=3>
+       2222
     </div>
-`
+    <div style='color: #00f;font-size: 28px' id='3' class=3>
+       3333
+    </div>
+    <div id='4'>
+       4444
+    </div>
+
+*/
 // div
     // 222
     // <span>333</span>
