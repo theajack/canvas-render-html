@@ -1,92 +1,64 @@
-# [ebuild-cli](https://www.github.com/theajack/ebuild-cli)
+# [canvas-render-html](https://www.github.com/theajack/canvas-render-html)
 
-<p>
-    <a href="https://www.github.com/theajack/ebuild-cli/stargazers" target="_black">
-        <img src="https://img.shields.io/github/stars/theajack/ebuild-cli?logo=github" alt="stars" />
-    </a>
-    <a href="https://www.github.com/theajack/ebuild-cli/network/members" target="_black">
-        <img src="https://img.shields.io/github/forks/theajack/ebuild-cli?logo=github" alt="forks" />
-    </a>
-    <a href="https://www.npmjs.com/package/ebuild-cli" target="_black">
-        <img src="https://img.shields.io/npm/v/ebuild-cli?logo=npm" alt="version" />
-    </a>
-    <a href="https://www.npmjs.com/package/ebuild-cli" target="_black">
-        <img src="https://img.shields.io/npm/dm/ebuild-cli?color=%23ffca28&logo=npm" alt="downloads" />
-    </a>
-    <a href="https://www.jsdelivr.com/package/npm/ebuild-cli" target="_black">
-        <img src="https://data.jsdelivr.com/v1/package/npm/ebuild-cli/badge" alt="jsdelivr" />
-    </a>
-</p>
-<p>
-    <a href="https://github.com/theajack" target="_black">
-        <img src="https://img.shields.io/badge/Author-%20theajack%20-7289da.svg?&logo=github" alt="author" />
-    </a>
-    <a href="https://www.github.com/theajack/ebuild-cli/blob/master/LICENSE" target="_black">
-        <img src="https://img.shields.io/github/license/theajack/ebuild-cli?color=%232DCE89&logo=github" alt="license" />
-    </a>
-    <a href="https://cdn.jsdelivr.net/npm/ebuild-cli/ebuild-cli.min.js"><img src="https://img.shields.io/bundlephobia/minzip/ebuild-cli.svg" alt="Size"></a>
-    <a href="https://github.com/theajack/ebuild-cli/search?l=javascript"><img src="https://img.shields.io/github/languages/top/theajack/ebuild-cli.svg" alt="TopLang"></a>
-    <a href="https://github.com/theajack/ebuild-cli/issues"><img src="https://img.shields.io/github/issues-closed/theajack/ebuild-cli.svg" alt="issue"></a>
-    <a href="https://www.github.com/theajack/ebuild-cli"><img src="https://img.shields.io/librariesio/dependent-repos/npm/ebuild-cli.svg" alt="Dependent"></a>
-</p>
+[English](https://github.com/theajack/canvas-render-html)
 
-<h3>🚀 Ebuild-cli</h3>
+使用Canvas渲染HTML代码的项目，目前处于开发阶段 0.0.1-alpha
 
-**[English](https://github.com/theajack/ebuild-cli/blob/master/README.md) | [使用实例](https://www.theajack.com/ebuild-cli/) | [更新日志](https://github.com/theajack/ebuild-cli/blob/master/helper/version.md) | [反馈](https://github.com/theajack/ebuild-cli/issues/new) | [Gitee](https://gitee.com/theajack/ebuild-cli)**
+简易版本[体验地址](https://theajack.gitee.io/canvas-render-html)
 
----
+目标与应用场景：
 
-<!--为保证目录生成正常， 请修改 helper 中的readme文件-->
+1. 实现浏览器环境，实现跨端运行HTML与JS代码
+2. 小程序、小游戏上运行html代码
+3. 基于此实现在小程序上运行vue、react以及第三方UI
+4. 支持小游戏及游戏引擎，实现绘制游戏UI
 
-<details>
-    <summary>展开目录</summary>
+目前正在开发中，如果您有好的想法和建议，欢迎提 Issue 与 MR
 
-<!-- toc -->
+## Done list
 
-- [0. 特性](#0-%E7%89%B9%E6%80%A7)
-- [1. 安装使用](#1-%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8)
-  * [1.1 npm](#11-npm)
-  * [1.2 cdn 引入](#12-cdn-%E5%BC%95%E5%85%A5)
-- [2. 使用介绍](#2-%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D)
-- [3. API](#3-api)
+1. 虚拟DOM的构建
+2. PIXI渲染
+3. 解析属性
+4. 解析部分样式 color，fontSize，width，height，display，left，top
+5. 完成基础布局
 
-<!-- tocstop -->
+## Todo List
 
-</details>
+1. 更多样式的完善
+2. css支持
+3. 事件支持
+4. z-index支持
+5. flex布局
+6. DOM 与 window api的完善
+7. 盒模型
+8. img、video、audio等标签的支持
+9. ...
 
----
+## 原理
 
-### 0. 特性
+HTML -> vdom + css -> pixi渲染
 
-1. xxx
-2. xxx
+### 记录
 
-### 1. 安装使用
+#### layout 布局实现
 
-#### 1.1 npm
+计算elemnt的layout与boundary实现
 
-```
-npm i ebuild-cli
-```
+inline + block relative布局
 
-```js
-import xxx from 'ebuild-cli'; 
-```
+#### 执行顺序
 
-#### 1.2 cdn 引入
+对于元素
 
-```html
-<script src="https://cdn.jsdelivr.net/npm/ebuild-cli/ebuild-cli.min.js"></script>
-<script>
-    console.log(xxx);
-</script>
-```
+1. 解析标签开始
+2. 创建元素 添加到parent
+3. 渲染样式
+4. 解析标签完成（子元素添加完成）
+5. 由父元素layout自身
 
-### 2. 使用介绍
+对于textNode
 
-xxx
-
-
-### 3. API
-
-xxx
+1. 创建 textNode 添加到父元素
+2. 渲染样式
+3. 由父元素layout自身

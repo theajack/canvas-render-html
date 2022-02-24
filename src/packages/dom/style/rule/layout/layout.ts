@@ -9,7 +9,7 @@
 import {getScreenSize} from '@src/adapter';
 import {TextNode} from '@src/packages/dom/elements/text-node';
 import {ILayout} from '@src/types/style';
-// import {ENodeType} from '@src/utils/enum';
+// import {ENodeType} from '@src/types/enum';
 import {Element} from '../../../elements/element';
 import {countStyleLength} from '../../style-util';
 
@@ -62,6 +62,10 @@ export class Layout implements ILayout {
                 return this._countBlockParentWidth();
             }
         }
+    }
+
+    get blockParentWidth () {
+        return this._countBlockParentWidth();
     }
 
     get height () {
@@ -144,11 +148,17 @@ export class Layout implements ILayout {
         this._element = element;
     }
 
+    _layoutLastChild () {
+        this._reLayout(this._element.childNodes.length - 1);
+    }
+
+    // 从 index个元素开始往后layout
     _reLayout (index: number) {
-        console.warn('layout', this._element.tagName, this._element.attributes.id, index);
+        // console.warn('layout', this._element.tagName, this._element.attributes.id, index);
         // debugger;
         const boundary = this._element._boundary;
         const nodes = this._element.childNodes;
+        // debugger;
         if (index < nodes.length - 1 && nodes[index].style.position === 'relative') {
             // 最后一个元素 或者 非relative元素不需要重新计算boundary
             boundary.countBoundary(index);
@@ -175,7 +185,12 @@ export class Layout implements ILayout {
                 node._container.y = y;
             } else {
                 if (i > 0) { // 第一个节点x y 直接为0
-                    const width = layout.width;
+                    // debugger;
+                    const width = layout.blockParentWidth;
+                    // if ((node as any)?.attributes?.id === '3') {
+                    //     debugger;
+                    // }
+                    // debugger;
                     if (display === 'block') {
                         x = boundary.startX;
                         y = boundary.endY;
@@ -200,11 +215,14 @@ export class Layout implements ILayout {
                 }
                 node._container.x = x;
                 node._container.y = y;
+                // console.log((node as any)?.attribute?.id);
+                // debugger;
                 boundary.extendBoundary(node);
             }
+            // console.log(boundary);
         }
 
-        console.log(boundary);
+        // console.log(boundary);
     }
     
 }

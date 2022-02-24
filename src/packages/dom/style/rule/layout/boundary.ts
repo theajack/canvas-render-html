@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-23 23:15:13
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-24 21:27:20
+ * @LastEditTime: 2022-02-25 01:28:26
  * @FilePath: /canvas-render-html/src/packages/dom/style/rule/layout/boundary.ts
  * @Description: Coding something
  */
@@ -64,6 +64,10 @@ export class Boundary implements IBoundary {
     }
 
     extendBoundary (node: Node) {
+        // debugger;
+        // if ((node as Element).attributes?.id === '2') {
+        //     debugger;
+        // }
         if (node.style.position !== 'relative') return;
         // debugger;
         const {x, y, width, height} = node._layout;
@@ -72,9 +76,13 @@ export class Boundary implements IBoundary {
         if (y < this.startY) { this.startY = y; }
 
         this.cornerX = x + width;
-        this.cornerY = x;
+        this.cornerY = y;
 
         this.endX = this.cornerX;
-        this.endY = y + height;
+        const layoutEndY = y + height;
+        if (layoutEndY > this.endY) { // ! 计算出来的 endY与上一次endY比较
+            this.endY = layoutEndY;
+        }
+        // console.log(this.endY);
     }
 }

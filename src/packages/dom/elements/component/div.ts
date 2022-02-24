@@ -7,8 +7,8 @@
  * @Description: Coding something
  */
 
-// import {EElementName} from '@src/utils/enum';
-import {EElementName} from '@src/utils/enum';
+// import {EElementName} from '@src/types/enum';
+import {EElementName} from '@src/types/enum';
 import {Element} from '../element';
 
 export class DivElement extends Element {

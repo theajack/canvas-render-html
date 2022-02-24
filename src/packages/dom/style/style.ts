@@ -2,14 +2,14 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-24 15:36:54
+ * @LastEditTime: 2022-02-24 22:03:18
  * @FilePath: /canvas-render-html/src/packages/dom/style/style.ts
  * @Description: Coding something
  */
 
 import {IStyle, TStyleDisplay, IStyleOptions, TStyleKey, TStylePosition} from '@src/types/style';
 import {IJson} from '@src/types/util';
-import {EElementTagName, ENodeType} from '@src/utils/enum';
+import {EElementTagName, ENodeType} from '@src/types/enum';
 import {BlockElementTags, Element} from '../elements/element';
 import {TextNode} from '../elements/text-node';
 import {parseStyleAttribute} from './style-parser';
@@ -85,6 +85,11 @@ export class TextNodeStyle implements IStyleOptions {
         }
 
         // todo 其他样式
+    }
+    _renderStyles () {
+        INHERIT_STYLES.forEach(key => {
+            this._setStyle(key);
+        });
     }
 }
 

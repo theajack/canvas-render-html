@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-22 21:55:03
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-23 17:14:57
+ * @LastEditTime: 2022-02-25 01:28:22
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-parser.ts
  * @Description: Coding something
  */
@@ -31,7 +31,8 @@ export function parseStyleAttribute (styleStr: string): IStyleOptions {
 
 
 export function parseStyleCssCode (styleStr: string): IStyleOptions {
-    console.log(styleStr);
+    styleStr;
+    // todo
     return {};
 }
 

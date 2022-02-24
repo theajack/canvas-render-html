@@ -2,14 +2,14 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-24 21:37:06
+ * @LastEditTime: 2022-02-25 01:25:07
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
 
 import {Style} from '@src/packages/dom/style/style';
 import {TAttributeKey} from '@src/types/attribute';
-import {EElementName, EElementTagName, ENodeType} from '@src/utils/enum';
+import {EElementName, EElementTagName, ENodeType} from '@src/types/enum';
 import {Container, Sprite} from 'pixi.js';
 import {Attribute} from '../attribute/attribute';
 import {parseHtml} from '../parser/parser';
@@ -95,30 +95,36 @@ export abstract class Element extends Node {
     }
     
     appendChild (node: Node) {
-        console.log(this.tagName, (node as any).tagName);
+        // console.log(this.tagName, (node as any).tagName);
         this._container.addChild(node._container);
-        node._onAdd(this);
-        debugger;
         this._childNodes.push(node);
 
-        this._layout._reLayout(this._childNodes.length - 1);
+        node._onAdd(this);
+
+        // this._layout._reLayout(this._childNodes.length - 1);
     }
 
     removeChild (node: Node) {
-        const index = this._pureRemoveChild(node);
-        if (index >= 0) {
-            this._layout._reLayout(index);
-        }
-    }
-
-    _pureRemoveChild (node: Node) {
         const index = this._childNodes.indexOf(node);
         if (index >= 0) {
             this._childNodes.splice(index, 1);
             this._container.removeChild(node._container);
+            // this._layout._reLayout(index);
         }
-        return index;
+        // const index = this._pureRemoveChild(node);
+        // if (index >= 0) {
+        //     this._layout._reLayout(index);
+        // }
     }
+
+    // _pureRemoveChild (node: Node) {
+    //     const index = this._childNodes.indexOf(node);
+    //     if (index >= 0) {
+    //         this._childNodes.splice(index, 1);
+    //         this._container.removeChild(node._container);
+    //     }
+    //     return index;
+    // }
 
     insertBefore (node: Node, refer: Node) {
         const index = this.childNodes.indexOf(refer);
@@ -129,7 +135,7 @@ export abstract class Element extends Node {
         this._container.addChildAt(node._container, index);
         node._onAdd(this);
         this.childNodes.splice(index, 0, node);
-        this._layout._reLayout(index);
+        // this._layout._reLayout(index);
     }
 
     // style
@@ -162,8 +168,6 @@ export abstract class Element extends Node {
     _onParseComplete () {
         // if (this.parentElement?.tagName === EElementTagName.Body) {
         // }
-        this.attributes._initAttributes();
-        this.style._initStyle();
     }
 
     _traverseChild (callback: (n: Node)=>void, reverse = false) {
@@ -187,6 +191,9 @@ export abstract class Element extends Node {
     }
 
     _clearChild () {
+        if (this._boundary) {
+            this._boundary._resetCoordinate();
+        }
         this._traverseChild(node => {
             node._clear();
         }, true);

@@ -7,7 +7,7 @@
  * @Description: Coding something
  */
 
-import {EElementName} from '@src/utils/enum';
+import {EElementName} from '@src/types/enum';
 import {BodyElement} from './component/body';
 import {DivElement} from './component/div';
 import {SpanElement} from './component/span';

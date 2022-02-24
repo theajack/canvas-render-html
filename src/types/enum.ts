@@ -3,7 +3,7 @@
  * @Date: 2022-02-20 16:13:23
  * @LastEditors: tackchen
  * @LastEditTime: 2022-02-23 17:40:23
- * @FilePath: /canvas-render-html/src/utils/enum.ts
+ * @FilePath: /canvas-render-html/src/types/enum.ts
  * @Description: Coding something
  */
 

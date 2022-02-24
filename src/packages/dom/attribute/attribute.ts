@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-22 22:22:04
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-24 16:49:33
+ * @LastEditTime: 2022-02-24 23:05:04
  * @FilePath: /canvas-render-html/src/packages/dom/attribute/attribute.ts
  * @Description: Coding something
  */
@@ -40,21 +40,21 @@ export class Attribute implements IAttributeOptions {
         // console.log(this._element);
     }
 
-    _addAttributes (attributes: IJson) {
+    _initAttributes (attributes: IJson) {
         for (const k in attributes) {
-            if (attributes.indexOf('"') !== -1) {
+            if (attributes[k].indexOf('"') !== -1) {
                 attributes[k] = attributes[k].replace(/"/g, '\'');
             }
         }
         this._originAttributes = attributes;
     }
-    _initAttributes () {
-        const attributes = this._originAttributes;
+    // _initAttributes () {
+    //     const attributes = this._originAttributes;
         
-        for (const k in attributes) {
-            this._setAttribute(k as TAttributeKey, attributes[k]);
-        }
-    }
+    //     for (const k in attributes) {
+    //         this._setAttribute(k as TAttributeKey, attributes[k]);
+    //     }
+    // }
 
     _buildAttributString () {
         const attributes = this._originAttributes;

@@ -8,8 +8,8 @@
  */
 
 
-// import {EElementName} from '@src/utils/enum';
-import {EElementName} from '@src/utils/enum';
+// import {EElementName} from '@src/types/enum';
+import {EElementName} from '@src/types/enum';
 import {Element} from '../element';
 
 export class BodyElement extends Element {

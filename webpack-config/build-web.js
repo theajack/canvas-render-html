@@ -1,13 +1,17 @@
 const path = require('path');
-const {commonRules, cssRules, resolve} = require('./rules');
+const {commonRules, resolve} = require('./rules');
 
 module.exports = () => {
     return {
         mode: 'production',
-        entry: path.resolve('./', 'public/main.ts'),
+        entry: path.resolve('./', 'src/index.ts'),
         output: {
-            path: path.resolve('./', 'public'),
-            filename: 'index.min.js',
+            path: path.resolve('./', 'npm'),
+            filename: 'canvas-render-html.min.js',
+            library: 'RenderHTML',
+            libraryTarget: 'umd',
+            libraryExport: 'default',
+            globalObject: 'this',
         },
         node: {
             fs: 'empty',
@@ -15,7 +19,7 @@ module.exports = () => {
         resolve,
         externals: {},
         module: {
-            rules: commonRules.concat(cssRules)
+            rules: commonRules
         }
     };
 };

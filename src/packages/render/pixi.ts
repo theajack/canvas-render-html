@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:18:44
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-20 21:20:09
+ * @LastEditTime: 2022-02-25 01:27:30
  * @FilePath: /canvas-render-html/src/packages/render/pixi.ts
  * @Description: Coding something
  */

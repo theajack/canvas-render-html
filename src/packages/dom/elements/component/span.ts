@@ -6,8 +6,8 @@
  * @FilePath: /canvas-render-html/src/packages/dom/elements/component/span.ts
  * @Description: Coding something
  */
-// import {EElementName} from '@src/utils/enum';
-import {EElementName} from '@src/utils/enum';
+// import {EElementName} from '@src/types/enum';
+import {EElementName} from '@src/types/enum';
 import {Element} from '../element';
 
 export class SpanElement extends Element {

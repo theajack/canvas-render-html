@@ -7,11 +7,11 @@
  * @Description: Coding something
  */
 
-import {ENodeType} from '@src/utils/enum';
+import {ENodeType} from '@src/types/enum';
 import {Text} from 'pixi.js';
 import {TextNodeBoundary} from '../style/rule/layout/boundary';
 import {TextLayout} from '../style/rule/layout/layout';
-import {INHERIT_STYLES, TextNodeStyle} from '../style/style';
+import {TextNodeStyle} from '../style/style';
 import {Element} from './element';
 import {Node} from './node';
 
@@ -42,12 +42,6 @@ export class TextNode extends Node {
         this._textContent = v;
         this._container.text = v;
         this.style.display = 'inline';
-    }
-
-    _renderStyles () {
-        INHERIT_STYLES.forEach(key => {
-            this.style._setStyle(key);
-        });
     }
 
     _onParseComplete () {

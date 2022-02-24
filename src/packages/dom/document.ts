@@ -1,4 +1,4 @@
-import {EElementName} from '@src/utils/enum';
+import {EElementName} from '@src/types/enum';
 import {createElement} from './elements/create-element';
 
 let _document: Document;

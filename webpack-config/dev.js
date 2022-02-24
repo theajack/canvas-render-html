@@ -1,5 +1,5 @@
 const path = require('path');
-const {commonRules, cssRules, resolve} = require('./rules');
+const {commonRules, resolve} = require('./rules');
 
 module.exports = {
     mode: 'development',
@@ -24,6 +24,6 @@ module.exports = {
         },
     },
     module: {
-        rules: commonRules.concat(cssRules)
+        rules: commonRules
     }
 };
