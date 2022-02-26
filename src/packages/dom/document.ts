@@ -1,5 +1,7 @@
 import {EElementName} from '@src/types/enum';
+import {getContext} from '../context/context';
 import {createElement} from './elements/create-element';
+import {querySelector} from './parser/query-selector';
 
 let _document: Document;
 
@@ -8,10 +10,21 @@ export class Document {
         if (_document) return _document;
     }
     get body () {
-        return this.createElement(EElementName.Body);
+        return getContext('body');
     }
     createElement (name: EElementName) {
         return createElement(name);
+    }
+    getElementById (id: string) {
+        const body = getContext('body');
+        if (body.getAttribute('id') === id) return body;
+        return body.getElementById(id);
+    }
+    querySelector (selector: string) {
+        return querySelector([getContext('body')], selector);
+    }
+    querySelectorAll (selector: string) {
+        return getContext('body').querySelectorAll(selector);
     }
 };
 

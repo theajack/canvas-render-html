@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-24 17:54:56
+ * @LastEditTime: 2022-02-25 17:18:02
  * @FilePath: /canvas-render-html/src/packages/dom/elements/text-node.ts
  * @Description: Coding something
  */
@@ -11,7 +11,7 @@ import {ENodeType} from '@src/types/enum';
 import {Text} from 'pixi.js';
 import {TextNodeBoundary} from '../style/rule/layout/boundary';
 import {TextLayout} from '../style/rule/layout/layout';
-import {TextNodeStyle} from '../style/style';
+import {TextNodeStyle} from '../style/text-style';
 import {Element} from './element';
 import {Node} from './node';
 

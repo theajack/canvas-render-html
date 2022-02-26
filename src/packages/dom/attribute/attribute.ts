@@ -2,36 +2,65 @@
  * @Author: tackchen
  * @Date: 2022-02-22 22:22:04
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-24 23:05:04
+ * @LastEditTime: 2022-02-26 23:03:23
  * @FilePath: /canvas-render-html/src/packages/dom/attribute/attribute.ts
  * @Description: Coding something
  */
-import {IAttributeOptions, TAttributeKey} from '@src/types/attribute';
+import {IAttributeOptions, IAttributePair, TAttributeKey} from '@src/types/attribute';
 import {IJson} from '@src/types/util';
 import {Element} from '../elements/element';
 
+export class AttributePair implements IAttributePair {
+    private _name: TAttributeKey;
+    get name () {return this._name;}
+    private _value: string;
+    get value () {return this._value;}
+    set value (v: string) {
+        this._value = v;
+        if (this.name === 'class') {
+            this._element.classList._initClassName();
+        } else if (this.name === 'style') {
+            this._element.style._setStyleAttribute(v);
+        }
+        
+        // todo
+    }
+    _element: Element;
+    constructor (element: Element, name: TAttributeKey, value = '') {
+        this._element = element;
+        this._name = name;
+        this._value = value;
+    }
+}
+
 export class Attribute implements IAttributeOptions {
-    private _originAttributes: IJson = {};
-
-    get style () {return this._getAttribute('style');}
-    set style (v: string) {this._setAttribute('style', v);}
-
-    get id () {return this._getAttribute('id');}
-    set id (v: string) {this._setAttribute('id', v);}
-
-    get class () {return this._getAttribute('class');}
-    set class (v: string) {this._setAttribute('class', v);}
-    
-    get onclick () {return this._getAttribute('onclick');}
-    set onclick (v: string) {this._setAttribute('onclick', v);}
+    _nameList: TAttributeKey[] = [];
+    style: IAttributePair;
+    id: IAttributePair;
+    class: IAttributePair;
+    onclick: IAttributePair;
 
     _setAttribute (key: TAttributeKey, value: string) {
-        // this._store[key] = value;
-        // todo 处理设置属性事件
-        key; value;
+        if (!this._nameList.includes(key)) {
+            this._nameList.push(key);
+        }
+        if (!this[key]) {
+            this[key] = new AttributePair(this._element, key);
+        }
+        this[key].value = value; // AttributePair 对象中更新事件
     }
     _getAttribute (key: TAttributeKey) {
-        return this._originAttributes[key] || '';
+        return this[key]?.value || '';
+    }
+    _hasAttribute (key: TAttributeKey) {
+        return this._nameList.includes(key);
+    }
+
+    _removeAttribute (key: TAttributeKey) {
+        (this[key] as any) = undefined;
+        const index = this._nameList.indexOf(key);
+        if (index >= 0) this._nameList.splice(index, 1);
+        // todo 处理设置属性事件
     }
 
     _element: Element;
@@ -40,13 +69,12 @@ export class Attribute implements IAttributeOptions {
         // console.log(this._element);
     }
 
-    _initAttributes (attributes: IJson) {
+    _initAttributes (attributes: IJson<string>) {
         for (const k in attributes) {
-            if (attributes[k].indexOf('"') !== -1) {
-                attributes[k] = attributes[k].replace(/"/g, '\'');
-            }
+            let value = attributes[k];
+            if (value.indexOf('"') !== -1) {value = value.replace(/"/g, '\'');}
+            this._setAttribute(k as TAttributeKey, value);
         }
-        this._originAttributes = attributes;
     }
     // _initAttributes () {
     //     const attributes = this._originAttributes;
@@ -57,11 +85,13 @@ export class Attribute implements IAttributeOptions {
     // }
 
     _buildAttributString () {
-        const attributes = this._originAttributes;
         let str = '';
-        for (const k in attributes) {
-            str += ` ${k}="${attributes[k]}"`;
-        }
+        this._nameList.forEach(name => {
+            const value = this[name]?.value;
+            if (value) {
+                str += ` ${name}="${value}"`;
+            }
+        });
         return str;
     }
 }

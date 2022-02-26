@@ -2,102 +2,45 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-24 22:03:18
+ * @LastEditTime: 2022-02-26 23:22:58
  * @FilePath: /canvas-render-html/src/packages/dom/style/style.ts
  * @Description: Coding something
  */
 
 import {IStyle, TStyleDisplay, IStyleOptions, TStyleKey, TStylePosition} from '@src/types/style';
-import {IJson} from '@src/types/util';
 import {EElementTagName, ENodeType} from '@src/types/enum';
 import {BlockElementTags, Element} from '../elements/element';
 import {TextNode} from '../elements/text-node';
 import {parseStyleAttribute} from './style-parser';
-
-const DefaultStyle: IStyle = {
-    color: '#000000',
-    backgroundColor: '#ffffff',
-    backgroundImage: '',
-    fontSize: '14px',
-    width: '',
-    height: '',
-    border: '',
-    opacity: '1',
-    display: 'block',
-    position: 'relative',
-    left: '',
-    top: '',
-};
-
-export const TextStyleNameMap: {
-    [prop in TStyleKey]?: string;
-} = {
-    color: 'fill',
-    fontSize: 'fontSize',
-};
-
-const TEXT_STYLES: TStyleKey[] = ['color', 'fontSize'];
-
-export const INHERIT_STYLES: TStyleKey[] = ['color', 'fontSize'];
-
-function isInheritStyle (name: TStyleKey) {
-    return INHERIT_STYLES.includes(name);
-}
-
-
-export class TextNodeStyle implements IStyleOptions {
-    
-    
-    display?: TStyleDisplay;
-    position?: TStylePosition;
-
-    get color () { return this._getStyle('color'); }
-    get fontSize () { return this._getStyle('fontSize'); }
-    // todo 其他可继承属性
-
-    private _getStyle (name: TStyleKey): string {
-        if (!TEXT_STYLES.includes(name)) return '';
-        return this._element.parentElement?.style[name] || '';
-    }
-
-    _element: TextNode;
-
-    constructor (element: TextNode) {
-        this._element = element;
-
-        this.display = 'inline';
-        this.position = 'relative';
-
-    }
-
-    _setStyle (name: TStyleKey) {
-        if (!TEXT_STYLES.includes(name)) return;
-        this._applyStyleIntoPixi(name);
-    }
-
-    _applyStyleIntoPixi (name: TStyleKey) {
-        const key = TextStyleNameMap[name];
-        if (key) { // 直接可以将样式映射成pixi text的样式
-            const value = this._getStyle(name);
-            if (value) {
-                (this._element._container.style as IJson)[key] = value;
-            }
-        }
-
-        // todo 其他样式
-    }
-    _renderStyles () {
-        INHERIT_STYLES.forEach(key => {
-            this._setStyle(key);
-        });
-    }
-}
+import {DefaultStyle} from './default-style';
+import {INHERIT_STYLES, isInheritStyle, isRelayoutStyle} from './style-util';
 
 export class Style implements IStyle {
-
     private _store: IStyleOptions = {};
+    @oprateStyle color: string;
+    @oprateStyle fontSize: string;
+    @oprateStyle backgroundColor: string;
+    @oprateStyle backgroundImage: string;
+    @oprateStyle width: string;
+    @oprateStyle height: string;
+    @oprateStyle border: string;
+    @oprateStyle opacity: string;
+    @oprateStyle display: TStyleDisplay;
+    @oprateStyle position: TStylePosition;
+    @oprateStyle left: string;
+    @oprateStyle top: string;
 
-    private _getStyle (name: TStyleKey): any {
+    _element: Element;
+    constructor (element: Element) {
+        this._element = element;
+        if (BlockElementTags.includes(element.tagName)) {
+            this._store.display = 'block';
+        } else {
+            this._store.display = 'inline';
+        }
+    }
+
+    _getStyle (name: TStyleKey): any {
         if (
             (typeof this._store[name] === 'undefined')
         ) {
@@ -120,53 +63,10 @@ export class Style implements IStyle {
             
             // 修改style时如果是可继承样式 则更改子元素样式
             this._inheritToChildren(name);
-        }
-    }
-    
-    get color () { return this._getStyle('color'); }
-    set color (v: string) { this._setStyle('color', v); }
 
-    get backgroundColor () { return this._getStyle('backgroundColor'); }
-    set backgroundColor (v: string) { this._setStyle('backgroundColor', v); }
-    
-    get backgroundImage () { return this._getStyle('backgroundImage'); }
-    set backgroundImage (v: string) { this._setStyle('backgroundImage', v); }
-
-    get fontSize () { return this._getStyle('fontSize'); }
-    set fontSize (v: string) { this._setStyle('fontSize', v); }
-
-    get width () { return this._getStyle('width'); }
-    set width (v: string) { this._setStyle('width', v); }
-
-    get height () { return this._getStyle('height'); }
-    set height (v: string) { this._setStyle('height', v); }
-
-    get border () { return this._getStyle('border'); }
-    set border (v: string) { this._setStyle('border', v); }
-
-    get opacity () { return this._getStyle('opacity'); }
-    set opacity (v: string) { this._setStyle('opacity', v); }
-
-    get display () { return this._getStyle('display'); }
-    set display (v: TStyleDisplay) { this._setStyle('display', v); }
-
-    get position () { return this._getStyle('position'); }
-    set position (v: TStylePosition) { this._setStyle('position', v); }
-
-    get left () { return this._getStyle('left'); }
-    set left (v: string) { this._setStyle('left', v); }
-
-    get top () { return this._getStyle('top'); }
-    set top (v: string) { this._setStyle('top', v); }
-
-    _element: Element;
-
-    constructor (element: Element) {
-        this._element = element;
-        if (BlockElementTags.includes(element.tagName)) {
-            this._store.display = 'block';
-        } else {
-            this._store.display = 'inline';
+            if (isRelayoutStyle(name)) {
+                this._element.parentElement?._layout._reLayoutChild(this._element);
+            }
         }
     }
 
@@ -179,15 +79,15 @@ export class Style implements IStyle {
     _setStyleAttribute (styleStr: string, fromInit = false) {
         const style = parseStyleAttribute(styleStr);
 
-        INHERIT_STYLES.forEach(k => { // 添加继承属性
-            if (!style[k])
-                style[k] = this._getStyle(k);
-        });
-
         for (const k in style) {
             const key = k as TStyleKey;
             this._setStyle(key, style[key] as string);
         }
+
+        INHERIT_STYLES.forEach(k => { // 添加继承属性
+            if (!style[k])
+                this._setStyle(k, this._getStyle(k), true);
+        });
 
         if (!fromInit) {
             this._renderStyles();
@@ -218,7 +118,16 @@ export class Style implements IStyle {
     }
 
     _initStyle () {
-        const str = this._element.attributes.style;
+        const str = this._element.attributes._getAttribute('style');
         this._setStyleAttribute(str, true);
     }
+}
+
+function oprateStyle (target: Style, property: TStyleKey) {
+    Object.defineProperty(target, property, {
+        get (this: typeof target) { return this._getStyle(property);},
+        set (this: typeof target, v: string) {
+            this._setStyle(property, v);
+        }
+    });
 }

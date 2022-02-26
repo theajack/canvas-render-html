@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 19:36:59
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-24 08:54:24
+ * @LastEditTime: 2022-02-25 17:07:48
  * @FilePath: /canvas-render-html/src/types/style.d.ts
  * @Description: Coding something
  */

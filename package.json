@@ -75,6 +75,7 @@
     "dependencies": {
         "css": "^3.0.0",
         "htmlparser2": "^7.2.0",
+        "parsel-js": "^1.0.2",
         "pixi.js": "^6.2.2",
         "tc-event": "^0.0.6"
     },

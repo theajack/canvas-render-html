@@ -7,6 +7,7 @@
  */
 
 import {getScreenSize} from '@src/adapter';
+import {Node} from '@src/packages/dom/elements/node';
 import {TextNode} from '@src/packages/dom/elements/text-node';
 import {ILayout} from '@src/types/style';
 // import {ENodeType} from '@src/types/enum';
@@ -120,10 +121,9 @@ export class Layout implements ILayout {
     }
 
     private _countBlockParentWidth () {
-        let parent: Element | null = null;
-        // debugger;
+        let parent: Element | null = this._element;
         do {
-            parent = this._element.parentElement;
+            parent = parent.parentElement;
             if (!parent)
                 return getScreenSize().width;
         } while (parent.style.display === 'inline');
@@ -132,10 +132,9 @@ export class Layout implements ILayout {
     }
 
     private _countBlockParentHeight (): number {
-        let parent: Element | null = null;
-        // debugger;
+        let parent: Element | null = this._element;
         do {
-            parent = this._element.parentElement;
+            parent = parent.parentElement;
             if (!parent) {
                 return this._element._container.height;
             }
@@ -148,17 +147,15 @@ export class Layout implements ILayout {
         this._element = element;
     }
 
-    _layoutLastChild () {
-        this._reLayout(this._element.childNodes.length - 1);
+    _layoutLastChild (reLayoutParent = false) {
+        this._reLayout(this._element.childNodes.length - 1, reLayoutParent);
     }
 
     // 从 index个元素开始往后layout
-    _reLayout (index: number) {
+    _reLayout (index: number, reLayoutParent = true) {
         // console.warn('layout', this._element.tagName, this._element.attributes.id, index);
-        // debugger;
         const boundary = this._element._boundary;
         const nodes = this._element.childNodes;
-        // debugger;
         if (index < nodes.length - 1 && nodes[index].style.position === 'relative') {
             // 最后一个元素 或者 非relative元素不需要重新计算boundary
             boundary.countBoundary(index);
@@ -167,6 +164,11 @@ export class Layout implements ILayout {
         //     debugger;
         // }
         const layout = this._element._layout; // element自身的实际layout尺寸
+        let width, height: number = 0;
+        if (reLayoutParent) {
+            width = layout.width;
+            height = layout.height;
+        }
         for (let i = index; i < this._element.childNodes.length; i++) {
             const node = nodes[index];
             const {display, position} = node.style;
@@ -185,17 +187,15 @@ export class Layout implements ILayout {
                 node._container.y = y;
             } else {
                 if (i > 0) { // 第一个节点x y 直接为0
-                    // debugger;
-                    const width = layout.blockParentWidth;
+                    const parentWidth = layout.blockParentWidth;
                     // if ((node as any)?.attributes?.id === '3') {
                     //     debugger;
                     // }
-                    // debugger;
                     if (display === 'block') {
                         x = boundary.startX;
                         y = boundary.endY;
                     } else if (display === 'inline-block') {
-                        if (width - boundary.cornerX >= nodeLayout.width) {
+                        if (parentWidth - boundary.cornerX >= nodeLayout.width) {
                             x = boundary.cornerX;
                             y = boundary.cornerY;
                         } else {
@@ -204,7 +204,7 @@ export class Layout implements ILayout {
                         }
                     } else if (display === 'inline') {
                         // todo 暂时和inline-block一样处理
-                        if (width - boundary.cornerX >= nodeLayout.width) {
+                        if (parentWidth - boundary.cornerX >= nodeLayout.width) {
                             x = boundary.cornerX;
                             y = boundary.cornerY;
                         } else {
@@ -216,13 +216,31 @@ export class Layout implements ILayout {
                 node._container.x = x;
                 node._container.y = y;
                 // console.log((node as any)?.attribute?.id);
-                // debugger;
                 boundary.extendBoundary(node);
             }
             // console.log(boundary);
         }
+        if (reLayoutParent && (layout.width !== width || layout.height !== height)) {
+            // debugger;
+            // console.warn('11', this._element.id, this._element.tagName);
+            // debugger;
+            // this._reLayoutParent();
+        }
 
         // console.log(boundary);
+
+
+    }
+
+    _reLayoutParent () {
+        this._element.parentElement?._layout._reLayoutChild(this._element);
+    }
+
+    _reLayoutChild (node: Node, reLayoutParent = true) {
+        const index = this._element.childNodes.indexOf(node);
+        if (index !== -1) {
+            this._reLayout(index, reLayoutParent);
+        }
     }
     
 }

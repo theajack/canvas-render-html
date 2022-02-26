@@ -3,7 +3,7 @@
         "baseUrl": ".",
         "outDir": "dist",
         "sourceMap": false,
-        "target": "es5",
+        "target": "ES5",
         "module": "esnext",
         "moduleResolution": "node",
         "allowJs": false,
@@ -12,6 +12,7 @@
         "noImplicitAny": true,
         "noImplicitThis": true,
         "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "removeComments": false,
@@ -32,7 +33,8 @@
     },
     "include": [
         "testUtils",
-        "./src/**/*"   
+        "./src/**/*", 
+        "./public/**/*"
     ],
     "exclude": [
         "./node_modules"

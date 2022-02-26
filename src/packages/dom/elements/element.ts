@@ -2,17 +2,20 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-25 01:25:07
+ * @LastEditTime: 2022-02-26 18:02:41
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
 
 import {Style} from '@src/packages/dom/style/style';
 import {TAttributeKey} from '@src/types/attribute';
+import {IElement} from '@src/types/dom';
 import {EElementName, EElementTagName, ENodeType} from '@src/types/enum';
 import {Container, Sprite} from 'pixi.js';
 import {Attribute} from '../attribute/attribute';
+import {ClassList} from '../attribute/class-list';
 import {parseHtml} from '../parser/parser';
+import {getElementById, querySelector, querySelectorAll} from '../parser/query-selector';
 // import {parseHtml} from '../parser/parser';
 import {Boundary} from '../style/rule/layout/boundary';
 import {Layout} from '../style/rule/layout/layout';
@@ -24,7 +27,7 @@ export const BlockElementTags = [
     EElementTagName.Body,
 ];
 
-export abstract class Element extends Node {
+export abstract class Element extends Node implements IElement {
     _sprite: Sprite;
     nodeType = ENodeType.Element;
 
@@ -35,6 +38,12 @@ export abstract class Element extends Node {
     _layout: Layout;
 
     _boundary: Boundary;
+
+    @oprateAttribute id: string;
+
+    classList: ClassList;
+    get className () {return this.classList.value;};
+    set className (v: string) {this.classList.value = v;}
 
     private _tagName: EElementTagName;
     get tagName () {return this._tagName;}
@@ -154,6 +163,7 @@ export abstract class Element extends Node {
         this.style = new Style(this);
         this._boundary = new Boundary(this);
         this._layout = new Layout(this);
+        this.classList = new ClassList(this);
         this.attributes = new Attribute(this);
     }
 
@@ -187,7 +197,14 @@ export abstract class Element extends Node {
     }
 
     setAttribute (key: TAttributeKey, value: string) {
-        return this.attributes._setAttribute(key, value);
+        this.attributes._setAttribute(key, value);
+    }
+
+    removeAttribute (key: TAttributeKey) {
+        return this.attributes._removeAttribute(key);
+    }
+    hasAttribute (key: TAttributeKey) {
+        return this.attributes._hasAttribute(key);
     }
 
     _clearChild () {
@@ -208,4 +225,29 @@ export abstract class Element extends Node {
         _this._container = null;
         // 重排计算
     }
+
+    getElementById (id: string) {return getElementById(this, id);}
+    querySelector (selector: string) {return querySelector(this.children, selector);}
+    querySelectorAll (selector: string) {return querySelectorAll(this, selector);}
+
+
+    get nextSibling (): Node | null {
+        if (!this.parentElement) return null;
+        const children = this.parentElement.children;
+        return children[children.indexOf(this) + 1] || null;
+    }
+    get previousSibling (): Node | null {
+        if (!this.parentElement) return null;
+        const children = this.parentElement.children;
+        return children[children.indexOf(this) - 1] || null;
+    }
+}
+
+function oprateAttribute (target: Element, property: TAttributeKey) {
+    Object.defineProperty(target, property, {
+        get (this: typeof target) { return this.getAttribute(property);},
+        set (this: typeof target, v: string) {
+            this.setAttribute(property, v);
+        }
+    });
 }

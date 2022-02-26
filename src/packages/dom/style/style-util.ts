@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 23:57:32
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-23 23:57:25
+ * @LastEditTime: 2022-02-26 23:00:16
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-util.ts
  * @Description: Coding something
  */
@@ -10,6 +10,7 @@
 // import {IJson} from '@src/types/util';
 // import {Text} from 'pixi.js';
 
+import {TStyleKey} from '@src/types/style';
 import {parseNumFromStr} from '@src/utils/util';
 
 
@@ -44,4 +45,27 @@ export function countStyleLength ({
         // todo 其他width类型
         return getDefaultLength();
     }
+}
+
+
+export const TextStyleNameMap: {
+    [prop in TStyleKey]?: string;
+} = {
+    color: 'fill',
+    fontSize: 'fontSize',
+};
+
+export const TEXT_STYLES: TStyleKey[] = ['color', 'fontSize'];
+
+export const INHERIT_STYLES: TStyleKey[] = ['color', 'fontSize'];
+
+export function isInheritStyle (name: TStyleKey) {
+    return INHERIT_STYLES.includes(name);
+}
+
+// 会引起重排的样式
+export const RELAYOUT_STYLES: TStyleKey[] = ['fontSize', 'display', 'position'];
+
+export function isRelayoutStyle (name: TStyleKey) {
+    return RELAYOUT_STYLES.includes(name);
 }

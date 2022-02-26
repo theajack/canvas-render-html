@@ -1,26 +1,25 @@
 import renderHtmlToCanvas from '../src';
+import {IJson} from '@src/types/util';
+import {document} from '@src/packages/dom/document';
 
 
 const WIN = window as any;
+WIN.doc = document;
 
-// <div>
-//         <span>111</span>
-//         <span>222</span>
-//         <div>333</div>
-//         <span>444</span>
-//     </div
-//     <span>555</span>
-//     <div>666</div>
+// <div class='a b'><span class='e 1'>d1 </span></div>
+// <div class='a c'><span class=''>d1 <span class='e'>span</span> </span></div>
+// <div class='a d 1'><div class='d'>d2</div></div>
+// <div class='a b'><span class=' 1'>d1 </span></div>
+// <div class='a d 2'><div class='d'>d2</div></div>
 const body = renderHtmlToCanvas({
-    html: /* html*/`<div id='div'>
-        <span id=1>111</span>
-        <span style='font-size: 40px; color: #f44' id=2>222</span>
-        <div id=3>333</div>
-        <span id=4>444</span>
-    </div>
-    <span>555</span>
-    <span>666</span>
-    <div>777</div>` // <span>s3</span>
+    html: /* html*/`
+    <span id=0>
+        <span id='1'>11</span><span id='2'>22</span>
+    </span>
+    <span id='3'>33</span>
+    <div id='4'>44</div>
+
+    ` // <span>s3</span>
     // <span>s2</span>
     // <div style='color: #f00;font-size: 18px' id='1' class=3>11111</div>
     // <div style='color: #00f;font-size: 28px' id='2' class=3>2222</div>
@@ -43,3 +42,55 @@ const body = renderHtmlToCanvas({
 });
 
 WIN.body = body;
+
+function thinFace (prototype: IJson, key: string) {
+    Object.defineProperty(prototype, key, {
+        get () {
+            prototype.hello.call(this);
+            return this[`_${key}`];
+        },
+        set (v: string) {
+            this[`_${key}`] = v;
+        }
+    });
+};
+
+  
+function hackGetter (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    WIN.t = target;
+    console.log(target, propertyKey, descriptor);
+    descriptor.get = function (this: Girl) {
+        console.log(this);
+        return '111';
+    };
+    // descriptor.get = function () {
+    //     return this._x;
+    // };
+};
+
+function helloDec (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    console.log(target, propertyKey, descriptor);
+    const value = descriptor.value;
+    descriptor.value = function (this: Girl, v: string) {
+        value.call(this, v);
+        return console.warn(v);
+    };
+};
+
+class Girl {
+    @thinFace
+    public age: number;
+
+    @hackGetter
+    get x () {return '';};
+
+    @helloDec
+    hello (v: string) {
+        console.log(v, this.x);
+    }
+}
+  
+const g = new Girl();
+WIN.g = g;
+// console.log(g.age); // 18
+WIN.Girl = Girl;
