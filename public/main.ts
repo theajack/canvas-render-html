@@ -2,7 +2,6 @@ import renderHtmlToCanvas from '../src';
 import {IJson} from '@src/types/util';
 import {document} from '@src/packages/dom/document';
 
-
 const WIN = window as any;
 WIN.doc = document;
 
@@ -19,7 +18,8 @@ const body = renderHtmlToCanvas({
     <span id='3'>33</span>
     <div id='4'>44</div>
 
-    ` // <span>s3</span>
+    `,
+    css: `#1{color: #fff}` // <span>s3</span>
     // <span>s2</span>
     // <div style='color: #f00;font-size: 18px' id='1' class=3>11111</div>
     // <div style='color: #00f;font-size: 28px' id='2' class=3>2222</div>

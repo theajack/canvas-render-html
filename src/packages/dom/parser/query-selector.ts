@@ -15,9 +15,14 @@ export function getElementById (element: Element, id: string): Element | null {
     const length = children.length;
     if (length > 0) {
         for (let i = 0; i < length; i++) {
-            const result = getElementById(children[i], id);
-            if (result) {
-                return result;
+            const child = children[i];
+            if (child.id === id) {
+                return child;
+            } else {
+                const result = getElementById(child, id);
+                if (result) {
+                    return result;
+                }
             }
         }
     }
@@ -103,4 +108,38 @@ function querySelectorBase (
 export function querySelectorAll (element: Element, selector: string): Element[] {
     console.log(element, selector);
     return [];
+}
+
+
+export function isElementMatchSelector (element: Element, tokens: IParselToken[]): boolean {
+    // todo
+    // debugger;
+    let lastCombType: TParselCombinatorContent | null = null;
+    let current: Element | null = element;
+    for (let i = tokens.length - 1; i >= 0; i--) {
+        if (!current) return false;
+        const token = tokens[i];
+        if (token.type === 'combinator') {
+            const combType = token.content as TParselCombinatorContent;
+            lastCombType = combType;
+            if (combType === ' ' || combType === '>') {
+                current = current.parentElement;
+            } else if (combType === '~' || combType === '+') {
+                current = current.previousElementSibling;
+            }
+        } else {
+            if (matchSelectorToken(current, token)) {
+                lastCombType = null;
+            } else {
+                if (lastCombType === ' ') {
+                    i++;
+                    current = current.parentElement;
+                } else if (lastCombType === '~') {
+                    i++;
+                    current = current.previousElementSibling;
+                }
+            }
+        }
+    }
+    return true;
 }

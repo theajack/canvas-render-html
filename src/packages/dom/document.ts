@@ -4,7 +4,6 @@ import {createElement} from './elements/create-element';
 import {querySelector} from './parser/query-selector';
 
 let _document: Document;
-
 export class Document {
     constructor () {
         if (_document) return _document;

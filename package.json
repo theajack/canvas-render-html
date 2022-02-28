@@ -13,7 +13,8 @@
         "build": "npm run build-npm && npm run build-web",
         "lint": "eslint src --ext js",
         "publish": "npm publish npm",
-        "jest": "jest"
+        "jest": "jest",
+        "test": "webpack-dev-server --open --config webpack-config/test.js"
     },
     "browser": {
         "fs": false,
@@ -49,6 +50,7 @@
         "chalk": "^4.1.1",
         "copy-webpack-plugin": "^6.2.1",
         "css-loader": "^5.2.5",
+        "easy-test-lib": "^1.0.2",
         "eslint": "^6.8.0",
         "eslint-config-standard": "^14.1.0",
         "eslint-loader": "^3.0.2",

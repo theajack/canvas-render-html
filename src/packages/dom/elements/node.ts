@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:44
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-26 18:02:26
+ * @LastEditTime: 2022-02-27 14:55:58
  * @FilePath: /canvas-render-html/src/packages/dom/elements/node.ts
  * @Description: Coding something
  */
@@ -12,6 +12,8 @@ import {ENodeType} from '@src/types/enum';
 import {Container, Text} from 'pixi.js';
 import {Element} from './element';
 import {INode} from '@src/types/dom';
+
+let nodeUniqueId = 0;
 
 export abstract class Node implements INode {
     nodeType: ENodeType;
@@ -24,6 +26,8 @@ export abstract class Node implements INode {
 
     _boundary: IBoundary;
 
+    __id: number;
+
     get parentNode () {
         return this.parentElement;
     }
@@ -33,6 +37,7 @@ export abstract class Node implements INode {
     // protected abstract draw (): void;
 
     constructor () {
+        this.__id = nodeUniqueId ++;
     }
 
     abstract _onParseComplete(): void;

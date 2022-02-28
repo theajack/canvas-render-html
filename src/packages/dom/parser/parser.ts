@@ -2,23 +2,29 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:55:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-26 15:53:31
+ * @LastEditTime: 2022-02-27 23:46:38
  * @FilePath: /canvas-render-html/src/packages/dom/parser/parser.ts
  * @Description: Coding something
  */
 
 import {EElementName} from '@src/types/enum';
+import {ICssOM, IStyleOptions, TSelectorRights} from '@src/types/style';
 import {Parser} from 'htmlparser2';
 import {onParseStyleTag} from '../css/global-css';
 import {BodyElement} from '../elements/component/body';
 import {createElement, createTextNode} from '../elements/create-element';
 import {Element} from '../elements/element';
 import {onParseScriptTag} from '../script/global-script';
+import {compareSelectorRights} from '../style/selector-right';
+import {mergeSortedStyles, parseCssCode} from '../style/style-parser';
+import {isElementMatchSelector} from './query-selector';
 
 export function parseHtml (
     htmlString: string,
-    parentElement: Element = new BodyElement()
+    parentElement: Element = new BodyElement(),
+    css = ''
 ): Element {
+    const cssom = parseCssCode(css);
     const elementStack: Element[] = [parentElement];
     const getLast  = () => elementStack[elementStack.length - 1];
     let currentTag: EElementName;
@@ -31,7 +37,12 @@ export function parseHtml (
                 elementStack.push(current);
                 current.attributes._initAttributes(attributes); // 先初始化style
                 current.style._initStyle();
-                current.style._renderStyles(true); //
+                
+                const style = countStyleFromCssOM(current, cssom);
+                // debugger;
+                if (style) {
+
+                }
             }
 
             // currentNode = createElement(name);
@@ -48,7 +59,7 @@ export function parseHtml (
                 const parent = getLast();
                 parent.appendChild(textNode);
                 textNode._onParseComplete();
-                textNode.style._renderStyles(true);
+                textNode.style._renderStyles();
                 // debugger;
 
                 parent._layout._layoutLastChild();
@@ -72,3 +83,25 @@ export function parseHtml (
     return parentElement;
 }
 (window as any).parse = Parser;
+
+// 根据元素和cssom 生成 styleJson
+function countStyleFromCssOM (element: Element, cssom: ICssOM | null): IStyleOptions | null {
+    if (!cssom) return null;
+    const styles: IStyleOptions[] = [];
+    const rights: TSelectorRights[] = [];
+    for (const selector in cssom) {
+        const cssomValue = cssom[selector];
+        if (isElementMatchSelector(element, cssomValue.tokens)) {
+            let index = 0;
+            for (let i = 0; i < rights.length; i++) {
+                index = i;
+                if (compareSelectorRights(rights[i], cssomValue.rights)) {
+                    break;
+                }
+            }
+            styles.splice(index, 0, cssomValue.styles);
+            rights.splice(index, 0, cssomValue.rights);
+        }
+    }
+    return mergeSortedStyles(styles);
+}

@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:05:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-25 17:48:25
+ * @LastEditTime: 2022-02-27 22:39:52
  * @FilePath: /canvas-render-html/src/index.ts
  * @Description: Coding something
  */
@@ -21,6 +21,7 @@ export default function renderHtmlToCanvas ({
     canvas,
     width,
     height,
+    css,
 }: IRenderHtmlToCanvasOptions): BodyElement {
     canvas = getCanvas(canvas);
     if (!width || !height) {
@@ -41,7 +42,7 @@ export default function renderHtmlToCanvas ({
     injectContext('body', body);
     application.stage.addChild(body._container);
 
-    parseHtml(html, body);
+    parseHtml(html, body, css);
 
     return body;
 }

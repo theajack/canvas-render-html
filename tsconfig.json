@@ -34,7 +34,8 @@
     "include": [
         "testUtils",
         "./src/**/*", 
-        "./public/**/*"
+        "./public/**/*", 
+        "./test/**/*"
     ],
     "exclude": [
         "./node_modules"

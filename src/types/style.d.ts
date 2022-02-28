@@ -2,10 +2,13 @@
  * @Author: tackchen
  * @Date: 2022-02-20 19:36:59
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-25 17:07:48
+ * @LastEditTime: 2022-02-27 17:44:37
  * @FilePath: /canvas-render-html/src/types/style.d.ts
  * @Description: Coding something
  */
+
+import {IParselToken} from 'parsel-js';
+import {IElement, INode} from './dom';
 
 export type TStyleCommon = 'inherit' | 'initial' | 'unset';
 
@@ -52,4 +55,27 @@ export type TStyleKey = keyof IStyle
 
 export type IStyleOptions = {
     [K in TStyleKey]?: IStyle[K];
+}
+
+export interface IStyleChange {
+    name: TStyleKey;
+    value: string;
+    isInherit?: boolean;
+}
+
+export interface IStyleChangeCollect {
+    node: INode;
+    changes: IStyleChange[];
+}
+
+export type TSelectorRights = number[];
+
+export type TSelectorRightsCompareResult = 'more' | 'even' | 'less';
+
+export interface ICssOM {
+    [selector: string]: {
+        rights: TSelectorRights;
+        styles: IStyleOptions;
+        tokens: IParselToken[];
+    }
 }

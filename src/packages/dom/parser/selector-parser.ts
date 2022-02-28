@@ -2,10 +2,12 @@
  * @Author: tackchen
  * @Date: 2022-02-25 23:37:50
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-26 14:24:38
+ * @LastEditTime: 2022-02-27 22:42:52
  * @FilePath: /canvas-render-html/src/packages/dom/parser/selector-parser.ts
  * @Description: Coding something
+ *
  */
+
 import {TAttributeKey} from '@src/types/attribute';
 import {isContain, isEndWith, isStartWith} from '@src/utils/util';
 import {IParselToken, tokenize} from 'parsel-js';
@@ -23,6 +25,7 @@ export function parseSelector (selector: string): IParselToken[] {
     return tokens as IParselToken[];
 }
 
+// element 对 type id class attribute 四种选择器 是否匹配
 export function matchSelectorToken (element: Element, token: IParselToken) {
     // if (typeof token === 'string') {
     //     console.error('被忽略的选择器token', token);
@@ -34,7 +37,6 @@ export function matchSelectorToken (element: Element, token: IParselToken) {
         case 'id': return element.id === token.name;
         case 'class': return element.classList.contains(token.name);
         case 'attribute': return matchAttribute(element, token);
-        case 'combinator': return true;
     }
     return false;
 }
