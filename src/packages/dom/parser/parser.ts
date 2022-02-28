@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:55:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-27 23:46:38
+ * @LastEditTime: 2022-02-28 12:00:17
  * @FilePath: /canvas-render-html/src/packages/dom/parser/parser.ts
  * @Description: Coding something
  */
@@ -28,6 +28,7 @@ export function parseHtml (
     const elementStack: Element[] = [parentElement];
     const getLast  = () => elementStack[elementStack.length - 1];
     let currentTag: EElementName;
+    // debugger;
     const parser = new Parser({
         onopentag (name: EElementName, attributes) {
             currentTag = name;
@@ -76,6 +77,7 @@ export function parseHtml (
             }
         },
         onend () {
+            // debugger;
         }
     });
     parser.write(htmlString);

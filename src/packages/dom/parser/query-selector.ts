@@ -29,10 +29,11 @@ export function getElementById (element: Element, id: string): Element | null {
     return null;
 }
 
-export function querySelector (elements: Element[], selector: string): Element | null{
+export function querySelector (element: Element, selector: string): Element | null{
     // const children = element.children;
     const tokens = parseSelector(selector);
-    for (const element of elements) {
+    const children = element.children;
+    for (const element of children) {
         const result = querySelectorBase(element, tokens, 0);
         if (result) { return result;}
     }
@@ -57,28 +58,34 @@ function querySelectorBase (
             tokenIndex++; break;
         case 'combinator': {
             tokenIndex++;
+            backLength = 0; // 进入comb之后重置回溯参数
             const combType = token.content as TParselCombinatorContent;
             if (tokenIndex >= tokens.length) return null;
             switch (combType) {
-                case ' ': {
-                } break;
-                case '+': {
+                case ' ': { // 所有子元素
+                    // 无需额外处理
+                }; break;
+                case '>': { // 仅限下一级子元素
+                    backLength = -1; // 不往上一级回溯
+                }; break;
+                case '~': { // 所有后面的兄弟节点
+                    let next = element.nextElementSibling;
+                    while (next) {
+                        const result = querySelectorBase(next, tokens, tokenIndex, backLength + 1);
+                        if (result) return result;
+                        next = next.nextElementSibling;
+                    }
+                    return null;
+                }
+                case '+': { // 仅限下一个兄弟节点
                     // 创建一个分支去检查
                     const next = element.nextElementSibling;
                     if (next) {
                         const result = querySelectorBase(next, tokens, tokenIndex, backLength + 1);
-                        if (result) {
-                            return result;
-                        }
+                        if (result)  return result;
                     }
                     return null;
                 }
-                case '>': {
-                    
-                } break;
-                case '~': {
-                    
-                } break;
             }
         }; break;
         default: {
@@ -88,7 +95,11 @@ function querySelectorBase (
                     return element;
                 return querySelectorBase(element, tokens, tokenIndex, backLength + 1);
             } else {
-                tokenIndex -= backLength;
+                if (backLength >= 0) {
+                    tokenIndex -= backLength;
+                } else { // 不往上一级回溯
+                    return null;
+                }
             }
         }
     }
@@ -96,7 +107,7 @@ function querySelectorBase (
     const children = element.children;
     if (children.length > 0) {
         for (const child of children) {
-            const result = querySelectorBase(child, tokens, tokenIndex);
+            const result = querySelectorBase(child, tokens, tokenIndex, backLength);
             if (result) {
                 return result;
             }
@@ -106,8 +117,13 @@ function querySelectorBase (
 }
 
 export function querySelectorAll (element: Element, selector: string): Element[] {
-    console.log(element, selector);
-    return [];
+    const tokens = parseSelector(selector);
+    const children = element.children;
+    const elementList: Element[] = [];
+    for (const element of children) {
+        querySelectorBase(element, tokens, 0, 0, elementList);
+    }
+    return elementList;
 }
 
 

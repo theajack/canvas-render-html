@@ -227,7 +227,7 @@ export abstract class Element extends Node implements IElement {
     }
 
     getElementById (id: string) {return getElementById(this, id);}
-    querySelector (selector: string) {return querySelector(this.children, selector);}
+    querySelector (selector: string) {return querySelector(this, selector);}
     querySelectorAll (selector: string) {return querySelectorAll(this, selector);}
 
 

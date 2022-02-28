@@ -24,6 +24,7 @@ export default ({cases, onComplete}: {
             log(`测试用例详细数据:`);
             log('----------------------------');
             result.results.forEach(item => {
+                if (item.disabled) return;
                 let str = `%c【${item.name}】: ${item.passed ? '' : '不'}通过(${item.time}ms); [输出结果]: ${lib.toString(item.result)};`;
                 if (!item.passed) {
                     str += `期望结果: ${lib.toString(item.expect)}`;

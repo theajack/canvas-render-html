@@ -1,6 +1,7 @@
 import {EElementName} from '@src/types/enum';
 import {getContext} from '../context/context';
 import {createElement} from './elements/create-element';
+import {Element} from './elements/element';
 import {querySelector} from './parser/query-selector';
 
 let _document: Document;
@@ -20,7 +21,9 @@ export class Document {
         return body.getElementById(id);
     }
     querySelector (selector: string) {
-        return querySelector([getContext('body')], selector);
+        return querySelector({
+            children: [getContext('body')]
+        } as Element, selector);
     }
     querySelectorAll (selector: string) {
         return getContext('body').querySelectorAll(selector);

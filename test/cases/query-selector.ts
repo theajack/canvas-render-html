@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-01-08 15:32:27
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-28 01:31:35
+ * @LastEditTime: 2022-02-28 14:17:06
  * @FilePath: /canvas-render-html/test/cases/query-selector.ts
  * @Description: Coding something
  */
@@ -19,10 +19,18 @@ import {matchSelectorToken, parseSelector} from '@src/packages/dom/parser/select
 renderHtmlToCanvas({
     html: /* html*/`
     <div class='d1'>
-        <div class='d11' id='id_d11'>d11</div><div class='d12'>d12</div>
+        <div class='d11' id='id_d11'>d11</div>
+        <div class='d12'>d12</div>
     </div>
     <div class='d2'>d2</div>
     <div class='d3'>d3</div>
+    <div class='d4'>
+        <div class='d41' id='id_d11'>
+            <div class='d42'>d42</div>
+        </div>
+        <div class='d42'>>d42</div>
+    </div>
+    <div class='d42'>+d42</div>
     `
 });
 
@@ -44,6 +52,16 @@ export default [{
         ];
     },
     expect: ['d11d12', 'd12', 'd11', undefined],
+}, {
+    name: '测试 querySelector combinator',
+    test () {
+        return [
+            document.querySelector('.d4 .d42')?.innerText,
+            document.querySelector('.d4 + .d42')?.innerText,
+            document.querySelector('.d4 > .d42')?.innerText,
+        ];
+    },
+    expect: ['d42', '+d42', '>d42'],
 }, {
     name: '测试 isElementMatchSelector',
     test () {
