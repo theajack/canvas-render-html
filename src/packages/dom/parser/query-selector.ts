@@ -32,12 +32,7 @@ export function getElementById (element: Element, id: string): Element | null {
 export function querySelector (element: Element, selector: string): Element | null{
     // const children = element.children;
     const tokens = parseSelector(selector);
-    const children = element.children;
-    for (const element of children) {
-        const result = querySelectorBase(element, tokens, 0);
-        if (result) { return result;}
-    }
-    return null;
+    return queryChildSelector(element, tokens);
 }
 
 // current 表示只对当前元素进行query 不遍历其孩子
@@ -104,6 +99,15 @@ function querySelectorBase (
         }
     }
 
+    return queryChildSelector(element, tokens, tokenIndex, backLength);
+}
+
+function queryChildSelector (
+    element: Element,
+    tokens: IParselToken[],
+    tokenIndex = 0,
+    backLength = 0,
+) {
     const children = element.children;
     if (children.length > 0) {
         for (const child of children) {
@@ -117,13 +121,10 @@ function querySelectorBase (
 }
 
 export function querySelectorAll (element: Element, selector: string): Element[] {
-    const tokens = parseSelector(selector);
-    const children = element.children;
-    const elementList: Element[] = [];
-    for (const element of children) {
-        querySelectorBase(element, tokens, 0, 0, elementList);
-    }
-    return elementList;
+    // const tokens = parseSelector(selector);
+    // todo
+    console.log(element, selector);
+    return [];
 }
 
 
