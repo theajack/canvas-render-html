@@ -121,21 +121,34 @@ function queryChildSelector (
 }
 
 export function querySelectorAll (element: Element, selector: string): Element[] {
-    // const tokens = parseSelector(selector);
-    // todo
-    console.log(element, selector);
-    return [];
+    const tokens = parseSelector(selector);
+    // 不是最优方案
+    return querySelectorAllBase(element, tokens);
 }
 
+function querySelectorAllBase (
+    element: Element,
+    tokens: IParselToken[],
+    result: Element[] = []
+) {
+    const children = element.children;
+    if (children.length > 0) {
+        for (const child of children) {
+            if (isElementMatchSelector(child, tokens)) {
+                result.push(child);
+            }
+            querySelectorAllBase(child, tokens, result);
+        }
+    }
+    return result;
+}
 
 export function isElementMatchSelector (element: Element, tokens: IParselToken[]): boolean {
-    // todo
-    // debugger;
     let lastCombType: TParselCombinatorContent | null = null;
     let current: Element | null = element;
     for (let i = tokens.length - 1; i >= 0; i--) {
-        if (!current) return false;
         const token = tokens[i];
+        if (!current || !token) return false;
         if (token.type === 'combinator') {
             const combType = token.content as TParselCombinatorContent;
             lastCombType = combType;
@@ -154,6 +167,8 @@ export function isElementMatchSelector (element: Element, tokens: IParselToken[]
                 } else if (lastCombType === '~') {
                     i++;
                     current = current.previousElementSibling;
+                } else {
+                    return false;
                 }
             }
         }

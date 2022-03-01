@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-01-08 15:32:27
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-28 14:17:06
+ * @LastEditTime: 2022-03-01 08:52:01
  * @FilePath: /canvas-render-html/test/cases/query-selector.ts
  * @Description: Coding something
  */
@@ -18,19 +18,23 @@ import {matchSelectorToken, parseSelector} from '@src/packages/dom/parser/select
 
 renderHtmlToCanvas({
     html: /* html*/`
-    <div class='d1'>
-        <div class='d11' id='id_d11'>d11</div>
-        <div class='d12'>d12</div>
-    </div>
-    <div class='d2'>d2</div>
-    <div class='d3'>d3</div>
-    <div class='d4'>
-        <div class='d41' id='id_d11'>
-            <div class='d42'>d42</div>
+    <div class='d00'>
+        <div class='d1'>
+            <div class='d10'>d10</div>
+            <div class=''></div>
+            <div class='d11' id='id_d11'>d11</div>
+            <div class='d12'>d12</div>
         </div>
-        <div class='d42'>>d42</div>
+        <div class='d2'>d2</div>
+        <div class='d3'>d3</div>
+        <div class='d4'>
+            <div class='d41' id='id_d11'>
+                <div class='d42'>d42</div>
+            </div>
+            <div class='d42'>>d42</div>
+        </div>
+        <div class='d42'>+d42</div>
     </div>
-    <div class='d42'>+d42</div>
     `
 });
 
@@ -51,7 +55,7 @@ export default [{
             document.querySelector('.d2 .d12')?.innerText,
         ];
     },
-    expect: ['d11d12', 'd12', 'd11', undefined],
+    expect: ['d10d11d12', 'd12', 'd11', undefined],
 }, {
     name: '测试 querySelector combinator',
     test () {
@@ -70,9 +74,14 @@ export default [{
             isElementMatchSelector(element, parseSelector('.d1 .d11')),
             isElementMatchSelector(element, parseSelector('div .d11')),
             isElementMatchSelector(element, parseSelector('.d2 .d11')),
+            isElementMatchSelector(element, parseSelector('.d42')),
+            isElementMatchSelector(element, parseSelector('.d10 + .d11')),
+            isElementMatchSelector(element, parseSelector('.d10 ~ .d11')),
+            isElementMatchSelector(element, parseSelector('.d1 > .d11')),
+            isElementMatchSelector(element, parseSelector('.d00 > .d11')),
         ];
     },
-    expect: [true, true, false],
+    expect: [true, true, false, false, false, true, true, false ],
 }, {
     name: '测试 matchSelectorToken',
     test () {
