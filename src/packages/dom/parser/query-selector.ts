@@ -37,6 +37,7 @@ export function querySelector (element: Element, selector: string): Element | nu
 }
 
 // current 表示只对当前元素进行query 不遍历其孩子
+// 相较于querySelectorAll 效率更高
 function querySelectorBase (
     element: Element,
     tokens: IParselToken[],
@@ -121,9 +122,9 @@ function queryChildSelector (
     return null;
 }
 
+// 基于遍历 + 匹配 相较于querySelector效率低 不是最优方案
 export function querySelectorAll (element: Element, selector: string): Element[] {
     const tokens = parseSelector(selector);
-    // 不是最优方案
     return querySelectorAllBase(element, tokens);
 }
 
@@ -175,4 +176,17 @@ export function isElementMatchSelector (element: Element, tokens: IParselToken[]
         }
     }
     return true;
+}
+
+export function getElementsByClassName (element: Element, className: string) {
+
+}
+export function getElementsByName () {
+    
+}
+export function getElementsByTagName () {
+    
+}
+export function getElementsByTagNameNs () {
+    return getElementsByTagName();
 }
