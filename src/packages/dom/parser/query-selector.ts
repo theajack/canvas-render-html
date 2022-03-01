@@ -10,6 +10,7 @@ import {IParselToken, TParselCombinatorContent} from 'parsel-js';
 import {Element} from '../elements/element';
 import {matchSelectorToken, parseSelector} from './selector-parser';
 
+// todo 待修改成 map模式 最高效查询
 export function getElementById (element: Element, id: string): Element | null {
     const children = element.children;
     const length = children.length;
