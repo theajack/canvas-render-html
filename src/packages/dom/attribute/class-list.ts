@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-26 09:41:19
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-26 14:19:09
+ * @LastEditTime: 2022-03-01 21:51:34
  * @FilePath: /canvas-render-html/src/packages/dom/attribute/class-list.ts
  * @Description: Coding something
  */
@@ -77,10 +77,21 @@ export class ClassList {
         return this.entries().map(item => item[1] as string);
     };
     contains (value: string) {
-        return new RegExp(`(^| )${value.trim()}( |$)`).test(this.value);
+        value = value.trim();
+        if (!value) return false;
+        return new RegExp(`(^| )${value}( |$)`).test(this.value);
     }
     item (index: number) {
         return this[index];
+    }
+    _matchClassName (className: string) {
+        className = className.trim();
+        if (!className) return false;
+        const array = className.split(' ');
+        for (const name of array) {
+            if (name && !this.contains(name)) return false;
+        }
+        return true;
     }
     [index: number]: string;
 

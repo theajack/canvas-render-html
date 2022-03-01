@@ -13,17 +13,13 @@ import {matchSelectorToken, parseSelector} from './selector-parser';
 // todo 待修改成 map模式 最高效查询
 export function getElementById (element: Element, id: string): Element | null {
     const children = element.children;
-    const length = children.length;
-    if (length > 0) {
-        for (let i = 0; i < length; i++) {
-            const child = children[i];
-            if (child.id === id) {
+    if (children.length > 0) {
+        for (const child of children) {
+            if (child.attributes.id?.value === id) {
                 return child;
             } else {
                 const result = getElementById(child, id);
-                if (result) {
-                    return result;
-                }
+                if (result) return result;
             }
         }
     }
@@ -125,24 +121,7 @@ function queryChildSelector (
 // 基于遍历 + 匹配 相较于querySelector效率低 不是最优方案
 export function querySelectorAll (element: Element, selector: string): Element[] {
     const tokens = parseSelector(selector);
-    return querySelectorAllBase(element, tokens);
-}
-
-function querySelectorAllBase (
-    element: Element,
-    tokens: IParselToken[],
-    result: Element[] = []
-) {
-    const children = element.children;
-    if (children.length > 0) {
-        for (const child of children) {
-            if (isElementMatchSelector(child, tokens)) {
-                result.push(child);
-            }
-            querySelectorAllBase(child, tokens, result);
-        }
-    }
-    return result;
+    return queryChildRecurssion(element, (child) => isElementMatchSelector(child, tokens));
 }
 
 export function isElementMatchSelector (element: Element, tokens: IParselToken[]): boolean {
@@ -179,14 +158,40 @@ export function isElementMatchSelector (element: Element, tokens: IParselToken[]
 }
 
 export function getElementsByClassName (element: Element, className: string) {
+    return queryChildRecurssion(
+        element,
+        (child) => child.classList._matchClassName(className)
+    );
+}
+export function getElementsByName (element: Element, name: string) {
+    return queryChildRecurssion(
+        element,
+        (child) => child.attributes.name?.value === name
+    );
+}
+export function getElementsByTagName (element: Element, tagName: string) {
+    return queryChildRecurssion(
+        element,
+        (child) => child.tagName === tagName.toUpperCase()
+    );
+}
+export function getElementsByTagNameNs (element: Element, tagName: string) {
+    return getElementsByTagName(element, tagName);
+}
 
-}
-export function getElementsByName () {
-    
-}
-export function getElementsByTagName () {
-    
-}
-export function getElementsByTagNameNs () {
-    return getElementsByTagName();
+function queryChildRecurssion (
+    element: Element,
+    match: (child: Element) => boolean,
+    result: Element[] = [],
+) {
+    const children = element.children;
+    if (children.length > 0) {
+        for (const child of children) {
+            if (match(child)) {
+                result.push(child);
+            }
+            queryChildRecurssion(child, match, result);
+        }
+    }
+    return result;
 }

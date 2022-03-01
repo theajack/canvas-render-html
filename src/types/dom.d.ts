@@ -2,17 +2,17 @@
  * @Author: tackchen
  * @Date: 2022-02-25 00:43:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-25 17:45:43
+ * @LastEditTime: 2022-03-01 22:22:29
  * @FilePath: /canvas-render-html/src/types/dom.d.ts
  * @Description: Coding something
  */
 
-import {IAttribute, TAttributeKey} from './attribute';
+import {IAttributeOptions, TAttributeKey} from './attribute';
 import {EElementTagName, ENodeType} from './enum';
 import {IStyleOptions} from './style';
 
 export interface IElement extends INode {
-    attributes: IAttribute;
+    attributes: IAttributeOptions;
     tagName: EElementTagName;
     innerText: string;
     outerHTML: string;

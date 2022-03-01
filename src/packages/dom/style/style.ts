@@ -2,21 +2,21 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-27 22:33:33
+ * @LastEditTime: 2022-03-01 22:56:17
  * @FilePath: /canvas-render-html/src/packages/dom/style/style.ts
  * @Description: Coding something
  */
 
 import {IStyle, TStyleDisplay, IStyleOptions, TStyleKey, TStylePosition} from '@src/types/style';
 import {EElementTagName, ENodeType} from '@src/types/enum';
-import {BlockElementTags, Element} from '../elements/element';
+import {Element} from '../elements/element';
 import {TextNode} from '../elements/text-node';
 import {parseStyleAttribute} from './style-parser';
 import {DefaultStyle} from './default-style';
 import {INHERIT_STYLES, isInheritStyle, isRelayoutStyle} from './style-util';
 
 export class Style implements IStyle {
-    private _store: IStyleOptions = {};
+    _store: IStyleOptions = {};
     @oprateStyle color: string;
     @oprateStyle fontSize: string;
     @oprateStyle backgroundColor: string;
@@ -33,11 +33,6 @@ export class Style implements IStyle {
     _element: Element;
     constructor (element: Element) {
         this._element = element;
-        if (BlockElementTags.includes(element.tagName)) {
-            this._store.display = 'block';
-        } else {
-            this._store.display = 'inline';
-        }
     }
 
     _getStyle (name: TStyleKey): any {
@@ -45,7 +40,8 @@ export class Style implements IStyle {
             (typeof this._store[name] === 'undefined')
         ) {
             if (!isInheritStyle(name) || this._element.tagName === EElementTagName.Body) {
-                return DefaultStyle[name];
+                const value = DefaultStyle[name];
+                return (typeof value === 'function') ? value(this._element) : value;
             } else {
                 return this._element.parentElement?.style[name];
             }

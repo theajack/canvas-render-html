@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-26 18:02:41
+ * @LastEditTime: 2022-03-01 22:21:52
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
@@ -21,11 +21,6 @@ import {Boundary} from '../style/rule/layout/boundary';
 import {Layout} from '../style/rule/layout/layout';
 import {Node} from './node';
 import {TextNode} from './text-node';
-
-export const BlockElementTags = [
-    EElementTagName.Div,
-    EElementTagName.Body,
-];
 
 export abstract class Element extends Node implements IElement {
     _sprite: Sprite;

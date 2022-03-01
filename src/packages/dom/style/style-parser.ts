@@ -2,17 +2,19 @@
  * @Author: tackchen
  * @Date: 2022-02-22 21:55:03
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-27 18:27:28
+ * @LastEditTime: 2022-03-01 22:47:21
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-parser.ts
  * @Description: Coding something
  */
 
-import {ICssOM, IStyleOptions, TStyleKey} from '@src/types/style';
+import {ICssOM, IStyleOptions, TSelectorRights, TStyleKey} from '@src/types/style';
 import {IJson} from '@src/types/util';
 import {isEndWith} from '@src/utils/util';
 import {Declaration, parse, Rule} from 'css';
+import {Element} from '../elements/element';
+import {isElementMatchSelector} from '../parser/query-selector';
 import {parseSelector} from '../parser/selector-parser';
-import {countSelectorRights} from './selector-right';
+import {compareSelectorRights, countSelectorRights} from './selector-right';
 
 (window as any).parse = parse;
 
@@ -117,6 +119,29 @@ export function processImportantStyles (styles: IStyleOptions[]) {
 
     styles.push(important);
     return styles;
+}
+
+// 根据元素和cssom 生成 styleJson
+export function countStyleFromCssOM (element: Element, cssom: ICssOM | null): IStyleOptions | null {
+    if (!cssom) return null;
+    const styles: IStyleOptions[] = [];
+    const rights: TSelectorRights[] = [];
+    for (const selector in cssom) {
+        const cssomValue = cssom[selector];
+        if (isElementMatchSelector(element, cssomValue.tokens)) {
+            let index = 0;
+            for (let i = 0; i < rights.length; i++) {
+                index = i;
+                if (compareSelectorRights(rights[i], cssomValue.rights)) {
+                    break;
+                }
+            }
+            styles.splice(index, 0, cssomValue.styles);
+            rights.splice(index, 0, cssomValue.rights);
+        }
+    }
+    styles.push(element.style._store); // ! 自身style优先级最高
+    return mergeSortedStyles(styles);
 }
 
 (window as any).parseCssBase = parseCssBase;

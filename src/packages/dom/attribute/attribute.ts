@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-22 22:22:04
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-26 23:03:23
+ * @LastEditTime: 2022-03-01 22:21:07
  * @FilePath: /canvas-render-html/src/packages/dom/attribute/attribute.ts
  * @Description: Coding something
  */
@@ -35,10 +35,11 @@ export class AttributePair implements IAttributePair {
 
 export class Attribute implements IAttributeOptions {
     _nameList: TAttributeKey[] = [];
-    style: IAttributePair;
-    id: IAttributePair;
-    class: IAttributePair;
-    onclick: IAttributePair;
+    style?: IAttributePair;
+    id?: IAttributePair;
+    class?: IAttributePair;
+    onclick?: IAttributePair;
+    name?: IAttributePair;
 
     _setAttribute (key: TAttributeKey, value: string) {
         if (!this._nameList.includes(key)) {
@@ -47,7 +48,8 @@ export class Attribute implements IAttributeOptions {
         if (!this[key]) {
             this[key] = new AttributePair(this._element, key);
         }
-        this[key].value = value; // AttributePair 对象中更新事件
+        (this[key] as AttributePair).value = value; // AttributePair 对象中更新事件
+        
     }
     _getAttribute (key: TAttributeKey) {
         return this[key]?.value || '';

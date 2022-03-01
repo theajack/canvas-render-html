@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 19:36:59
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-27 17:44:37
+ * @LastEditTime: 2022-03-01 22:52:12
  * @FilePath: /canvas-render-html/src/types/style.d.ts
  * @Description: Coding something
  */
@@ -36,7 +36,7 @@ export interface IBoundary {
     cornerY: number;
 }
 
-export interface IStyle {
+export interface IStyleBase {
     color: TStyleValue;
     backgroundColor: TStyleValue;
     backgroundImage: TStyleValue;
@@ -45,12 +45,18 @@ export interface IStyle {
     height: TStyleValue;
     border: TStyleValue;
     opacity: TStyleValue;
-    display: TStyleDisplay;
     position: TStylePosition;
     left: TStyleValue;
     top: TStyleValue;
 }
 
+export interface IStyle extends IStyleBase {
+    display: TStyleDisplay;
+}
+
+export interface IDefaultStyle extends IStyleBase {
+    display(element: IElement): TStyleDisplay;
+}
 export type TStyleKey = keyof IStyle
 
 export type IStyleOptions = {

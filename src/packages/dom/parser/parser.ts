@@ -2,22 +2,19 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:55:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-28 12:00:17
+ * @LastEditTime: 2022-03-01 22:42:32
  * @FilePath: /canvas-render-html/src/packages/dom/parser/parser.ts
  * @Description: Coding something
  */
 
 import {EElementName} from '@src/types/enum';
-import {ICssOM, IStyleOptions, TSelectorRights} from '@src/types/style';
 import {Parser} from 'htmlparser2';
 import {onParseStyleTag} from '../css/global-css';
 import {BodyElement} from '../elements/component/body';
 import {createElement, createTextNode} from '../elements/create-element';
 import {Element} from '../elements/element';
 import {onParseScriptTag} from '../script/global-script';
-import {compareSelectorRights} from '../style/selector-right';
-import {mergeSortedStyles, parseCssCode} from '../style/style-parser';
-import {isElementMatchSelector} from './query-selector';
+import {countStyleFromCssOM, parseCssCode} from '../style/style-parser';
 
 export function parseHtml (
     htmlString: string,
@@ -40,6 +37,8 @@ export function parseHtml (
                 current.style._initStyle();
                 
                 const style = countStyleFromCssOM(current, cssom);
+                
+                console.log(current.className, style);
                 // debugger;
                 if (style) {
 
@@ -85,25 +84,3 @@ export function parseHtml (
     return parentElement;
 }
 (window as any).parse = Parser;
-
-// 根据元素和cssom 生成 styleJson
-function countStyleFromCssOM (element: Element, cssom: ICssOM | null): IStyleOptions | null {
-    if (!cssom) return null;
-    const styles: IStyleOptions[] = [];
-    const rights: TSelectorRights[] = [];
-    for (const selector in cssom) {
-        const cssomValue = cssom[selector];
-        if (isElementMatchSelector(element, cssomValue.tokens)) {
-            let index = 0;
-            for (let i = 0; i < rights.length; i++) {
-                index = i;
-                if (compareSelectorRights(rights[i], cssomValue.rights)) {
-                    break;
-                }
-            }
-            styles.splice(index, 0, cssomValue.styles);
-            rights.splice(index, 0, cssomValue.rights);
-        }
-    }
-    return mergeSortedStyles(styles);
-}

@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-01-08 15:32:27
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 08:52:01
+ * @LastEditTime: 2022-03-01 22:44:09
  * @FilePath: /canvas-render-html/test/cases/query-selector.ts
  * @Description: Coding something
  */
@@ -18,8 +18,8 @@ import {matchSelectorToken, parseSelector} from '@src/packages/dom/parser/select
 
 renderHtmlToCanvas({
     html: /* html*/`
-    <div class='d00'>
-        <div class='d1'>
+    <div class='d00 c1 c2 c3'>
+        <div class='d1' style='color: #0f0'>
             <div class='d10'>d10</div>
             <div class=''></div>
             <div class='d11' id='id_d11'>d11</div>
@@ -34,7 +34,16 @@ renderHtmlToCanvas({
             <div class='d42'>>d42</div>
         </div>
         <div class='d42'>+d42</div>
+        <div class='c1 c2 c3 c4'></div>
+        <span name='aa'></span>
+        <span name='aa'></span>
+        <span name='bb'></span>
     </div>
+    `,
+    css: /* css*/`
+    .d00 .d1{
+        color: #f00
+    }
     `
 });
 
@@ -96,5 +105,15 @@ export default [{
         ];
     },
     expect: [true, true, true, true, true, false],
+}, {
+    name: '测试 other',
+    test () {
+        return [
+            document.getElementsByClassName('c3  c1 ').length,
+            document.getElementsByName('aa').length,
+            document.getElementsByTagName('span').length
+        ];
+    },
+    expect: [2, 2, 3],
 }];
 
