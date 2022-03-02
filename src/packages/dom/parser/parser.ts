@@ -2,11 +2,12 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:55:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 22:42:32
+ * @LastEditTime: 2022-03-01 23:40:29
  * @FilePath: /canvas-render-html/src/packages/dom/parser/parser.ts
  * @Description: Coding something
  */
 
+import {collectStyleChange} from '@src/packages/render/render-manager';
 import {EElementName} from '@src/types/enum';
 import {Parser} from 'htmlparser2';
 import {onParseStyleTag} from '../css/global-css';
@@ -34,14 +35,12 @@ export function parseHtml (
                 getLast().appendChild(current);
                 elementStack.push(current);
                 current.attributes._initAttributes(attributes); // 先初始化style
-                current.style._initStyle();
                 
                 const style = countStyleFromCssOM(current, cssom);
                 
-                console.log(current.className, style);
                 // debugger;
                 if (style) {
-
+                    collectStyleChange(current, style.styles);
                 }
             }
 

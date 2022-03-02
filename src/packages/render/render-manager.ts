@@ -1,13 +1,14 @@
-import {IStyleChange, IStyleChangeCollect} from '@src/types/style';
+import {IStyleChangeCollect, IStyleOptions} from '@src/types/style';
 import {IJson} from '@src/types/util';
 import {Application} from 'pixi.js';
+import {Element} from '../dom/elements/element';
 import {Node} from '../dom/elements/node';
 
 const StyleCollector: IJson<IStyleChangeCollect> = {};
 
 const LayoutCollector: Node[] = [];
 
-export function collectStyleChange (node: Node, change: IStyleChange) {
+export function collectStyleChange (node: Element, change: IStyleOptions) {
     if (!StyleCollector[node.__id]) {
         StyleCollector[node.__id] = {node, changes: [change]};
     } else {
@@ -15,7 +16,7 @@ export function collectStyleChange (node: Node, change: IStyleChange) {
     }
 }
 
-export function collectLayoutChange (node: Node) {
+export function collectLayoutChange (node: Element) {
     if (!LayoutCollector.includes(node)) {
         LayoutCollector.push(node);
     }

@@ -2,19 +2,19 @@
  * @Author: tackchen
  * @Date: 2022-02-22 21:55:03
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 22:47:21
+ * @LastEditTime: 2022-03-01 23:39:39
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-parser.ts
  * @Description: Coding something
  */
 
 import {ICssOM, IStyleOptions, TSelectorRights, TStyleKey} from '@src/types/style';
 import {IJson} from '@src/types/util';
-import {isEndWith} from '@src/utils/util';
 import {Declaration, parse, Rule} from 'css';
 import {Element} from '../elements/element';
 import {isElementMatchSelector} from '../parser/query-selector';
 import {parseSelector} from '../parser/selector-parser';
 import {compareSelectorRights, countSelectorRights} from './selector-right';
+import {parseCssImportantValue, transformCssProperty} from './style-util';
 
 (window as any).parse = parse;
 
@@ -85,44 +85,48 @@ function parseCssBase (styleStr: string): Rule[] {
     }
 }
 
-// font-size => fontSize
-function transformCssProperty (property: string) {
-    return property.replace(/-[a-z]/g, (str, index) => {
-        const letter = str[1];
-        return index === 0 ? letter : letter.toUpperCase();
-    });
-}
-
 // 合并排好序的styles数组
-export function mergeSortedStyles (styles: IStyleOptions[]): IStyleOptions | null {
+function mergeSortedStyles (styles: IStyleOptions[]): {
+    styles: IStyleOptions;
+    importantKeys: TStyleKey[]
+} | null {
     if (styles.length === 0) {
         return null;
     }
     styles.unshift({});
-    processImportantStyles(styles);
-    return Object.assign.apply(null, styles) as IStyleOptions;
+    const importantKeys = processImportantStyles(styles);
+    return {
+        styles: Object.assign.apply(null, styles) as IStyleOptions,
+        importantKeys
+    };
 }
 
 // 传入排好序的styles数组 提取important样式 append到数组最后
-export function processImportantStyles (styles: IStyleOptions[]) {
+function processImportantStyles (styles: IStyleOptions[]): TStyleKey[] {
     const important: IStyleOptions = {};
+    const importantKeys: TStyleKey[] = [];
 
     styles.forEach(style => {
         for (const k in style) {
             const key = k as TStyleKey;
-            const value = style[key] as string;
-            if (isEndWith(value, '!important')) {
-                important[key] = value.replace('!important', '') as any;
+            const value = parseCssImportantValue(style[key]);
+            if (value) {
+                important[key] = value as any;
+                if (!importantKeys.includes(key))
+                    importantKeys.push(key);
             }
         }
     });
 
     styles.push(important);
-    return styles;
+    return importantKeys;
 }
 
 // 根据元素和cssom 生成 styleJson
-export function countStyleFromCssOM (element: Element, cssom: ICssOM | null): IStyleOptions | null {
+export function countStyleFromCssOM (element: Element, cssom: ICssOM | null): {
+    styles: IStyleOptions;
+    importantKeys: TStyleKey[]
+} | null {
     if (!cssom) return null;
     const styles: IStyleOptions[] = [];
     const rights: TSelectorRights[] = [];
@@ -132,7 +136,7 @@ export function countStyleFromCssOM (element: Element, cssom: ICssOM | null): IS
             let index = 0;
             for (let i = 0; i < rights.length; i++) {
                 index = i;
-                if (compareSelectorRights(rights[i], cssomValue.rights)) {
+                if (compareSelectorRights(rights[i], cssomValue.rights) === 'more') {
                     break;
                 }
             }
@@ -140,7 +144,10 @@ export function countStyleFromCssOM (element: Element, cssom: ICssOM | null): IS
             rights.splice(index, 0, cssomValue.rights);
         }
     }
-    styles.push(element.style._store); // ! 自身style优先级最高
+    const selfStyle = element.style._store;
+    if (Object.keys(selfStyle).length > 0) {
+        styles.push(selfStyle); // ! 自身style优先级最高
+    }
     return mergeSortedStyles(styles);
 }
 

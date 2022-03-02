@@ -112,11 +112,6 @@ export class Style implements IStyle {
             this._applyStyleIntoPixi(k as TStyleKey);
         }
     }
-
-    _initStyle () {
-        const str = this._element.attributes._getAttribute('style');
-        this._setStyleAttribute(str, true);
-    }
 }
 
 function oprateStyle (target: Style, property: TStyleKey) {

@@ -22,6 +22,8 @@
 3. 解析属性
 4. 解析部分样式 color，fontSize，width，height，display，left，top
 5. 完成基础布局
+6. querySelector 等api完成
+7. 单元测试
 
 ## Todo List
 
@@ -32,7 +34,7 @@
 5. flex布局
 6. DOM 与 window api的完善
 7. 盒模型
-8. img、video、audio等标签的支持
+8. img、audio、video等标签的支持
 9. ...
 
 ## 原理

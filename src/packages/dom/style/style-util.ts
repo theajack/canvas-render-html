@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 23:57:32
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-26 23:00:16
+ * @LastEditTime: 2022-03-01 23:36:08
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-util.ts
  * @Description: Coding something
  */
@@ -11,7 +11,7 @@
 // import {Text} from 'pixi.js';
 
 import {TStyleKey} from '@src/types/style';
-import {parseNumFromStr} from '@src/utils/util';
+import {isEndWith, parseNumFromStr} from '@src/utils/util';
 
 
 // export function mergeStyle (target: IStyle, style: IStyle): IStyle {
@@ -68,4 +68,22 @@ export const RELAYOUT_STYLES: TStyleKey[] = ['fontSize', 'display', 'position'];
 
 export function isRelayoutStyle (name: TStyleKey) {
     return RELAYOUT_STYLES.includes(name);
+}
+
+
+// font-size => fontSize
+export function transformCssProperty (property: string) {
+    return property.replace(/-[a-z]/g, (str, index) => {
+        const letter = str[1];
+        return index === 0 ? letter : letter.toUpperCase();
+    });
+}
+
+const IMPORTANT = '!important';
+export function parseCssImportantValue (value?: string) {
+    if (!value) return '';
+    if (isEndWith(value, IMPORTANT)) {
+        return value.replace(IMPORTANT, '');
+    }
+    return '';
 }
