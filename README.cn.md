@@ -64,3 +64,44 @@ inline + block relative布局
 1. 创建 textNode 添加到父元素
 2. 渲染样式
 3. 由父元素layout自身
+
+
+#### IDEA
+
+adapter实现类
+
+pixi提供ui显示 背后有不同端各自adapter实现
+
+1. input web：input； 小游戏 wx.showKeyboard
+2. audio web: Audio； 小游戏 wx.createWebAudioContext
+3. video web: video； 小游戏 wx.createVideo （将video至于顶层 调整位置） // wx.createVideoDecoder 方案2：解码逐帧绘制
+
+#### 重排
+
+对inline元素 使用 measureInlineElement 计算长宽
+对于block元素 使用 
+
+
+#### 重新渲染
+
+难点：
+
+1. 样式继承
+2. css+选择器
+3. important修饰符处理
+
+
+分类
+
+1. class id attr 修改：
+
+需要对当前元素及其之下的所有元素进行重新cssom比对渲染
+
+2. style=xxx
+   
+由于需要对当前元素style重置，所以采用对当前元素进行重新cssom比对渲染
+
+3. style.xx = xx
+
+只需要对当前元素的某个style进行覆盖 需要考虑important属性
+
