@@ -80,3 +80,8 @@ export interface ICssOM {
         tokens: IParselToken[];
     }
 }
+
+export interface IStyleAndImportantKeys {
+    styles: IStyleOptions;
+    importantKeys: TStyleKey[]
+}

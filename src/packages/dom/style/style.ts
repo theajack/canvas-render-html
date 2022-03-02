@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 22:56:17
+ * @LastEditTime: 2022-03-02 20:52:00
  * @FilePath: /canvas-render-html/src/packages/dom/style/style.ts
  * @Description: Coding something
  */
@@ -16,6 +16,8 @@ import {DefaultStyle} from './default-style';
 import {INHERIT_STYLES, isInheritStyle, isRelayoutStyle} from './style-util';
 
 export class Style implements IStyle {
+    _inlineStyle: IStyleOptions = {}; // 内联样式 含有important
+    // 内联样式 + css样式 不含有important信息 不包含继承样式 已经处理过了继承样式
     _store: IStyleOptions = {};
     @oprateStyle color: string;
     @oprateStyle fontSize: string;
@@ -74,6 +76,7 @@ export class Style implements IStyle {
 
     _setStyleAttribute (styleStr: string, fromInit = false) {
         const style = parseStyleAttribute(styleStr);
+        this._inlineStyle = style;
 
         for (const k in style) {
             const key = k as TStyleKey;

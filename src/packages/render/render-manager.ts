@@ -6,8 +6,6 @@ import {Node} from '../dom/elements/node';
 
 const StyleCollector: IJson<IStyleChangeCollect> = {};
 
-const LayoutCollector: Node[] = [];
-
 export function collectStyleChange (node: Element, change: IStyleOptions) {
     if (!StyleCollector[node.__id]) {
         StyleCollector[node.__id] = {node, changes: [change]};
@@ -16,6 +14,17 @@ export function collectStyleChange (node: Element, change: IStyleOptions) {
     }
 }
 
+// 处理选择器变化 attr、tagName 改变
+
+const SelectorCollector: Node[] = [];
+export function collectSelectorChange (node: Element) {
+    if (!SelectorCollector.includes(node)) {
+        SelectorCollector.push(node);
+    }
+}
+
+
+const LayoutCollector: Node[] = [];
 export function collectLayoutChange (node: Element) {
     if (!LayoutCollector.includes(node)) {
         LayoutCollector.push(node);

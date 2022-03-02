@@ -2,12 +2,12 @@
  * @Author: tackchen
  * @Date: 2022-02-22 21:55:03
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 23:39:39
+ * @LastEditTime: 2022-03-02 20:58:41
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-parser.ts
  * @Description: Coding something
  */
 
-import {ICssOM, IStyleOptions, TSelectorRights, TStyleKey} from '@src/types/style';
+import {ICssOM, IStyleAndImportantKeys, IStyleOptions, TSelectorRights, TStyleKey} from '@src/types/style';
 import {IJson} from '@src/types/util';
 import {Declaration, parse, Rule} from 'css';
 import {Element} from '../elements/element';
@@ -86,10 +86,7 @@ function parseCssBase (styleStr: string): Rule[] {
 }
 
 // 合并排好序的styles数组
-function mergeSortedStyles (styles: IStyleOptions[]): {
-    styles: IStyleOptions;
-    importantKeys: TStyleKey[]
-} | null {
+function mergeSortedStyles (styles: IStyleOptions[]): IStyleAndImportantKeys | null {
     if (styles.length === 0) {
         return null;
     }
@@ -123,10 +120,7 @@ function processImportantStyles (styles: IStyleOptions[]): TStyleKey[] {
 }
 
 // 根据元素和cssom 生成 styleJson
-export function countStyleFromCssOM (element: Element, cssom: ICssOM | null): {
-    styles: IStyleOptions;
-    importantKeys: TStyleKey[]
-} | null {
+export function countStyleFromCssOM (element: Element, cssom: ICssOM | null): IStyleAndImportantKeys | null {
     if (!cssom) return null;
     const styles: IStyleOptions[] = [];
     const rights: TSelectorRights[] = [];
@@ -144,9 +138,9 @@ export function countStyleFromCssOM (element: Element, cssom: ICssOM | null): {
             rights.splice(index, 0, cssomValue.rights);
         }
     }
-    const selfStyle = element.style._store;
-    if (Object.keys(selfStyle).length > 0) {
-        styles.push(selfStyle); // ! 自身style优先级最高
+    const inlineStyle = element.style._inlineStyle; // 内联样式
+    if (Object.keys(inlineStyle).length > 0) {
+        styles.push(inlineStyle); // ! 内联样式优先级最高
     }
     return mergeSortedStyles(styles);
 }
