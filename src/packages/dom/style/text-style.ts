@@ -1,8 +1,10 @@
-import {IStyleOptions, TStyleDisplay, TStyleKey, TStylePosition} from '@src/types/style';
+import {StyleChangeManager} from '@src/packages/render/render-manager';
+import {IStyleClass, IStyleOptions, TStyleDisplay, TStyleKey, TStylePosition} from '@src/types/style';
 import {TextNode} from '../elements/text-node';
-import {INHERIT_STYLES, isRelayoutStyle, TextStyleNameMap, TEXT_STYLES} from './style-util';
+import {DefaultStyle} from './default-style';
+import {INHERIT_STYLES, TextStyleNameMap, TEXT_STYLES} from './style-util';
 
-export class TextNodeStyle implements IStyleOptions {
+export class TextNodeStyle implements IStyleClass {
     _element: TextNode;
 
     display: TStyleDisplay = 'inline';
@@ -25,9 +27,9 @@ export class TextNodeStyle implements IStyleOptions {
         if (!TEXT_STYLES.includes(name)) return;
         this._applyStyleIntoPixi(name);
 
-        if (isRelayoutStyle(name)) {
-            this._element.parentElement?._layout._reLayoutChild(this._element);
-        }
+        // if (isRelayoutStyle(name)) {
+        //     this._element.parentElement?._layout._reLayoutChild(this._element);
+        // }
     }
 
     _applyStyleIntoPixi (name: TStyleKey) {
@@ -35,15 +37,44 @@ export class TextNodeStyle implements IStyleOptions {
         if (key) { // 直接可以将样式映射成pixi text的样式
             const value = this._getStyle(name);
             if (value) {
-                (this._element._container.style as any)[key] = value;
+                this._applySingleStyleToPixi(key, value);
             }
         }
 
         // todo 其他样式
     }
-    _renderStyles () {
-        INHERIT_STYLES.forEach(key => {
-            this._setStyle(key);
+    _applySingleStyleToPixi (key: string, value: string) {
+        (this._element._container.style as any)[key] = value;
+    }
+    _renderStyles (styles: IStyleOptions) {
+        for (const k in styles) {
+            this._applyStyleIntoPixi(k as TStyleKey);
+        }
+    }
+
+    _collectInheritChange (name: TStyleKey, value: string) {
+        StyleChangeManager.collectSingleChange(this._element, name, value);
+    }
+
+    _getDefaultStyle (name: TStyleKey) {
+        const value = DefaultStyle[name];
+        return (typeof value === 'function') ? value(this._element) : value;
+    }
+
+    _getInheritStyle (name: TStyleKey): string { // todo
+        if (!this._element.parentElement) {
+            return this._getDefaultStyle(name);
+        } else {
+            return this._element.parentElement.style[name];
+        }
+    }
+
+    _initInheritStyles () {
+        INHERIT_STYLES.forEach(k => { // 添加继承属性
+            const value = this._getInheritStyle(k);
+            if (value) {
+                StyleChangeManager.collectSingleChange(this._element, k, value);
+            }
         });
     }
 }

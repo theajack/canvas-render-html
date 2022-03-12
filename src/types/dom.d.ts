@@ -2,14 +2,14 @@
  * @Author: tackchen
  * @Date: 2022-02-25 00:43:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 22:22:29
+ * @LastEditTime: 2022-03-10 09:16:33
  * @FilePath: /canvas-render-html/src/types/dom.d.ts
  * @Description: Coding something
  */
 
 import {IAttributeOptions, TAttributeKey} from './attribute';
 import {EElementTagName, ENodeType} from './enum';
-import {IStyleOptions} from './style';
+import {IStyleClass} from './style';
 
 export interface IElement extends INode {
     attributes: IAttributeOptions;
@@ -32,5 +32,5 @@ export interface INode {
     parentElement: IElement | null;
     parentNode: IElement | null;
     textContent: string;
-    style: IStyleOptions;
+    style: IStyleClass;
 }

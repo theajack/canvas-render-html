@@ -2,16 +2,17 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:44
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-27 14:55:58
+ * @LastEditTime: 2022-03-12 14:15:23
  * @FilePath: /canvas-render-html/src/packages/dom/elements/node.ts
  * @Description: Coding something
  */
 
-import {IBoundary, ILayout, IStyleOptions} from '@src/types/style';
+import {IBoundary, ILayout, IStyleClass} from '@src/types/style';
 import {ENodeType} from '@src/types/enum';
 import {Container, Text} from 'pixi.js';
 import {Element} from './element';
 import {INode} from '@src/types/dom';
+import {IJson} from '@src/types/util';
 
 let nodeUniqueId = 0;
 
@@ -22,7 +23,7 @@ export abstract class Node implements INode {
 
     _layout: ILayout;
 
-    style: IStyleOptions;
+    style: IStyleClass;
 
     _boundary: IBoundary;
 
@@ -39,8 +40,10 @@ export abstract class Node implements INode {
     constructor () {
         this.__id = nodeUniqueId ++;
     }
+    abstract _onParseStart (attributes?: IJson<string>): void;
 
-    abstract _onParseComplete(): void;
+    _onParseEnd () {
+    };
 
     // 添加到父元素之后会渲染样式
     _onAdd (parent: Element) {

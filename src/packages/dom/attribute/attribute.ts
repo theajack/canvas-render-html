@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-22 22:22:04
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 22:21:07
+ * @LastEditTime: 2022-03-06 20:50:21
  * @FilePath: /canvas-render-html/src/packages/dom/attribute/attribute.ts
  * @Description: Coding something
  */
@@ -72,6 +72,9 @@ export class Attribute implements IAttributeOptions {
     }
 
     _initAttributes (attributes: IJson<string>) {
+        if (!attributes.style) {
+            attributes.style = '';
+        }
         for (const k in attributes) {
             let value = attributes[k];
             if (value.indexOf('"') !== -1) {value = value.replace(/"/g, '\'');}

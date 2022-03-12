@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-25 17:18:02
+ * @LastEditTime: 2022-03-12 14:23:21
  * @FilePath: /canvas-render-html/src/packages/dom/elements/text-node.ts
  * @Description: Coding something
  */
@@ -44,7 +44,11 @@ export class TextNode extends Node {
         this.style.display = 'inline';
     }
 
-    _onParseComplete () {
+    _onParseStart () {
+        this.style._initInheritStyles();
+    }
+
+    _onParseEnd () {
     }
 
     _onAdd (parent: Element): void {

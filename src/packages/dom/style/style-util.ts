@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 23:57:32
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 23:36:08
+ * @LastEditTime: 2022-03-06 20:01:27
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-util.ts
  * @Description: Coding something
  */
@@ -80,6 +80,9 @@ export function transformCssProperty (property: string) {
 }
 
 const IMPORTANT = '!important';
+export function isImportantValue (value: string = '') {
+    return value.indexOf(IMPORTANT) !== -1;
+}
 export function parseCssImportantValue (value?: string) {
     if (!value) return '';
     if (isEndWith(value, IMPORTANT)) {

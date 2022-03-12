@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-27 16:52:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-27 17:17:15
+ * @LastEditTime: 2022-03-06 14:42:00
  * @FilePath: /canvas-render-html/src/packages/dom/style/selector-right.ts
  * @Description: Coding something
  */
@@ -53,8 +53,4 @@ export function compareSelectorRights (a: TSelectorRights, b: TSelectorRights): 
         }
     }
     return 'even';
-}
-
-export function mergeStyles () {
-
 }

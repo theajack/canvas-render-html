@@ -76,10 +76,8 @@ pixi提供ui显示 背后有不同端各自adapter实现
 2. audio web: Audio； 小游戏 wx.createWebAudioContext
 3. video web: video； 小游戏 wx.createVideo （将video至于顶层 调整位置） // wx.createVideoDecoder 方案2：解码逐帧绘制
 
-#### 重排
+重排 => 重绘 or => 重绘 => 重排 
 
-对inline元素 使用 measureInlineElement 计算长宽
-对于block元素 使用 
 
 
 #### 重新渲染
@@ -105,3 +103,10 @@ pixi提供ui显示 背后有不同端各自adapter实现
 
 只需要对当前元素的某个style进行覆盖 需要考虑important属性
 
+
+#### 重排
+
+<!-- 对inline元素 使用 measureInlineElement 计算长宽
+对于block元素 使用  -->
+
+pixi绘制完成之后 元素的初始长宽都已经计算好了

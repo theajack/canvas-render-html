@@ -2,12 +2,11 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:55:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 23:40:29
+ * @LastEditTime: 2022-03-12 14:17:53
  * @FilePath: /canvas-render-html/src/packages/dom/parser/parser.ts
  * @Description: Coding something
  */
 
-import {collectStyleChange} from '@src/packages/render/render-manager';
 import {EElementName} from '@src/types/enum';
 import {Parser} from 'htmlparser2';
 import {onParseStyleTag} from '../css/global-css';
@@ -15,14 +14,11 @@ import {BodyElement} from '../elements/component/body';
 import {createElement, createTextNode} from '../elements/create-element';
 import {Element} from '../elements/element';
 import {onParseScriptTag} from '../script/global-script';
-import {countStyleFromCssOM, parseCssCode} from '../style/style-parser';
 
 export function parseHtml (
     htmlString: string,
     parentElement: Element = new BodyElement(),
-    css = ''
 ): Element {
-    const cssom = parseCssCode(css);
     const elementStack: Element[] = [parentElement];
     const getLast  = () => elementStack[elementStack.length - 1];
     let currentTag: EElementName;
@@ -34,14 +30,9 @@ export function parseHtml (
                 const current = createElement(name);
                 getLast().appendChild(current);
                 elementStack.push(current);
-                current.attributes._initAttributes(attributes); // 先初始化style
+
+                current._onParseStart(attributes);
                 
-                const style = countStyleFromCssOM(current, cssom);
-                
-                // debugger;
-                if (style) {
-                    collectStyleChange(current, style.styles);
-                }
             }
 
             // currentNode = createElement(name);
@@ -57,19 +48,20 @@ export function parseHtml (
                 textNode.textContent = text;
                 const parent = getLast();
                 parent.appendChild(textNode);
-                textNode._onParseComplete();
-                textNode.style._renderStyles();
+                textNode._onParseStart();
+                textNode._onParseEnd();
+                // textNode.style._renderStyles();
                 // debugger;
 
-                parent._layout._layoutLastChild();
+                // parent._layout._layoutLastChild();
             // console.log('ontext', text);
             }
         },
         onclosetag () {
             if (currentTag !== EElementName.Script && currentTag !== EElementName.Style) {
                 const current = elementStack.pop() as Element;
-                current._onParseComplete();
-                getLast()._layout._layoutLastChild();
+                current._onParseEnd();
+                // getLast()._layout._layoutLastChild();
                 // debugger;
                 // console.log(tagname);
             }

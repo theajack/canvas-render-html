@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:05:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-27 22:39:52
+ * @LastEditTime: 2022-03-06 20:34:00
  * @FilePath: /canvas-render-html/src/index.ts
  * @Description: Coding something
  */
@@ -15,6 +15,7 @@ import {parseHtml} from './packages/dom/parser/parser';
 import {createElement} from './packages/dom/elements/create-element';
 import {EElementName} from './types/enum';
 import {BodyElement} from './packages/dom/elements/component/body';
+import {CssOM} from './packages/dom/style/cssom';
 
 export default function renderHtmlToCanvas ({
     html,
@@ -42,7 +43,9 @@ export default function renderHtmlToCanvas ({
     injectContext('body', body);
     application.stage.addChild(body._container);
 
-    parseHtml(html, body, css);
+    injectContext('cssom', new CssOM(css));
+
+    parseHtml(html, body);
 
     return body;
 }

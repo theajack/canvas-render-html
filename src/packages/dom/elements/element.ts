@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 22:21:52
+ * @LastEditTime: 2022-03-12 14:34:03
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
@@ -11,6 +11,7 @@ import {Style} from '@src/packages/dom/style/style';
 import {TAttributeKey} from '@src/types/attribute';
 import {IElement} from '@src/types/dom';
 import {EElementName, EElementTagName, ENodeType} from '@src/types/enum';
+import {IJson} from '@src/types/util';
 import {Container, Sprite} from 'pixi.js';
 import {Attribute} from '../attribute/attribute';
 import {ClassList} from '../attribute/class-list';
@@ -163,16 +164,22 @@ export abstract class Element extends Node implements IElement {
     }
 
     _renderStyles () {
-        this.style._renderStyles();
+        // this.style._renderStyles();
     }
 
     _onAdd (parent: Element): void {
         super._onAdd(parent);
     }
 
-    _onParseComplete () {
+    _onParseStart (attributes: IJson<string>) {
+        this.attributes._initAttributes(attributes);
+        this.style._initInheritStyles();
+    }
+
+    _onParseEnd () {
         // if (this.parentElement?.tagName === EElementTagName.Body) {
         // }
+        super._onParseEnd();
     }
 
     _traverseChild (callback: (n: Node)=>void, reverse = false) {
