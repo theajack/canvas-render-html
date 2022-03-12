@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-01-08 15:32:27
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 17:48:18
+ * @LastEditTime: 2022-03-12 23:20:31
  * @FilePath: /canvas-render-html/test/cases/query-selector.ts
  * @Description: Coding something
  */
@@ -16,51 +16,66 @@ import {document} from '@src/packages/dom/document';
 
 (window as any).doc = document;
 
+renderHtmlToCanvas({
+    html: /* html*/`
+    <div class='d00 c1 c2 c3'>
+        <div>
+            <span>111</span><span>222</span>
+            <div>333</div>
+            <span>111</span><span>222</span>
+        </div>
+        <div class='d1' style='color: #0f0'>
+            <div class='d10'>d10</div>
+            <div class=''></div>
+            <div class='d11' id='id_d11'>d11</div>
+            <div class='d12'>d12</div>
+        </div>
+        <div class='d2'>d2</div>
+        <div class='d3'>d3</div>
+        <div class='d4'>
+            <div class='d41' id='id_d11'>
+                <div class='d42'>d42</div>
+            </div>
+            <div class='d42'>>d42</div>
+        </div>
+        <div class='d42'>+d42</div>
+        <div class='c1 c2 c3 c4'></div>
+        <span name='aa'></span>
+        <span name='aa'></span>
+        <span name='bb'></span>
+    </div>
+    `,
+    css: /* css*/`
+    .d00 .d1{
+        color: #f00
+    }
+    `
+});
+
 // renderHtmlToCanvas({
 //     html: /* html*/`
 //     <div class='d00 c1 c2 c3'>
-//         <div class='d1' style='color: #0f0'>
-//             <div class='d10'>d10</div>
-//             <div class=''></div>
-//             <div class='d11' id='id_d11'>d11</div>
-//             <div class='d12'>d12</div>
+//         <div class='dd1'>
+//             <div class='d1'>d10000</div>
 //         </div>
-//         <div class='d2'>d2</div>
-//         <div class='d3'>d3</div>
-//         <div class='d4'>
-//             <div class='d41' id='id_d11'>
-//                 <div class='d42'>d42</div>
-//             </div>
-//             <div class='d42'>>d42</div>
-//         </div>
-//         <div class='d42'>+d42</div>
-//         <div class='c1 c2 c3 c4'></div>
-//         <span name='aa'></span>
-//         <span name='aa'></span>
-//         <span name='bb'></span>
+//         <div class='d1'>d10</div>
 //     </div>
 //     `,
 //     css: /* css*/`
-//     .d00 .d1{
+//     .d00>.d1{
 //         color: #f00
 //     }
 //     `
 // });
 
-renderHtmlToCanvas({
-    html: /* html*/`
-    <div class='d00 c1 c2 c3'>
-        <div class='dd1'>
-            <div class='d1'>d10</div>
-        </div>
-    </div>
-    `,
-    css: /* css*/`
-    .d00>.d1{
-        color: #f00
-    }
-    `
-});
+// renderHtmlToCanvas({
+//     html: /* html*/`<div>111</div><div>2222</div>`,
+//     css: /* css*/`
+//     .d00>.d1{
+//         color: #f00
+//     }
+//     `
+// });
 (window as any).a = document.body.querySelector('.d00');
 // renderHtmlToCanvas({
 //     html: /* html*/`

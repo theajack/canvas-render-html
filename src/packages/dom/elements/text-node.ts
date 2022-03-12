@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 14:23:21
+ * @LastEditTime: 2022-03-12 23:19:50
  * @FilePath: /canvas-render-html/src/packages/dom/elements/text-node.ts
  * @Description: Coding something
  */
@@ -38,7 +38,7 @@ export class TextNode extends Node {
     private _textContent: string;
     get textContent () {return this._textContent;}
     set textContent (v: string) {
-        v = v.replace(/\n/g, '').trim();
+        // v = v.replace(/\n/g, '').trim();
         this._textContent = v;
         this._container.text = v;
         this.style.display = 'inline';

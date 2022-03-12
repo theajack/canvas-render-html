@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:55:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 14:17:53
+ * @LastEditTime: 2022-03-12 23:19:46
  * @FilePath: /canvas-render-html/src/packages/dom/parser/parser.ts
  * @Description: Coding something
  */
@@ -39,6 +39,8 @@ export function parseHtml (
             // console.log('onopentag', name, attributes);
         },
         ontext (text) {
+            text = text.replace(/\n/g, '').trim();
+            if (!text) return;
             if (currentTag === EElementName.Style) {
                 onParseStyleTag(text);
             } else if (currentTag === EElementName.Script) {

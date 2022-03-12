@@ -19,7 +19,6 @@ import {ClassList} from '../attribute/class-list';
 import {parseHtml} from '../parser/parser';
 import {getElementById, querySelector, querySelectorAll} from '../parser/query-selector';
 // import {parseHtml} from '../parser/parser';
-import {Boundary} from '../style/rule/layout/boundary';
 import {Layout} from '../style/rule/layout/layout';
 import {Node} from './node';
 import {TextNode} from './text-node';
@@ -33,8 +32,6 @@ export abstract class Element extends Node implements IElement {
     attributes: Attribute;
 
     _layout: Layout;
-
-    _boundary: Boundary;
 
     @oprateAttribute id: string;
 
@@ -158,7 +155,6 @@ export abstract class Element extends Node implements IElement {
         this._sprite = new Sprite();
         this._container.addChild(this._sprite);
         this.style = new Style(this);
-        this._boundary = new Boundary(this);
         this._layout = new Layout(this);
         this.classList = new ClassList(this);
         this.attributes = new Attribute(this);
@@ -249,9 +245,7 @@ export abstract class Element extends Node implements IElement {
     }
 
     _clearChild () {
-        if (this._boundary) {
-            this._boundary._resetCoordinate();
-        }
+        this._layout._reset();
         this._traverseChild(node => {
             node._clear();
         }, true);

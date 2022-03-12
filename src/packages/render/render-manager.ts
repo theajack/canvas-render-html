@@ -36,7 +36,7 @@ export const StyleChangeManager = (() => {
                 item.styles[name] = value as any;
             }
             if (isRelayoutStyle(name as TStyleKey)) {
-                collectLayoutChange(node);
+                LayoutChangeManager.collectElement(node);
             }
         },
         // 通过style = xxx 触发
@@ -56,7 +56,7 @@ export const StyleChangeManager = (() => {
         
             for (const key in styles) { // 提取可能造成重排的样式
                 if (isRelayoutStyle(key as TStyleKey)) {
-                    collectLayoutChange(node);
+                    LayoutChangeManager.collectElement(node);
                 }
             }
         },
@@ -107,24 +107,40 @@ export const SelectorChangeManager = (() => {
 })();
 
 
-const LayoutCollector: Node[] = [];
-export function collectLayoutChange (node: Node) {
-    if (!LayoutCollector.includes(node)) {
-        LayoutCollector.push(node);
-    }
-}
+export const LayoutChangeManager = (() => {
+    const rootElement = buildParentChooser();
+    let collector: Node[] = [];
 
-function triggerLayoutChange () {
-
-}
+    return {
+        collectElement (node: Node) {
+            if (!collector.includes(node)) {
+                collector.push(node);
+                // textNode的style肯定是来自继承自父元素 所以可以忽略textNode的change
+                if (node.nodeType === ENodeType.Element) {
+                    rootElement.add(node as Element);
+                }
+            }
+        },
+        triggerChange () {
+            rootElement.get()?._layout._reLayout(0);
+            if (collector.length > 0) {
+                // todo
+                console.log('triggerSelectorChange', collector);
+                collector = [];
+                rootElement.clear();
+            }
+        }
+    };
+})();
 
 export function initRenderManager (app: Application) {
     app.ticker.add(() => {
-        triggerNextTickCalls();
-
+        // 三个顺序不能颠倒
         SelectorChangeManager.triggerChange();
         StyleChangeManager.triggerChange();
-        triggerLayoutChange();
+        LayoutChangeManager.triggerChange();
+
+        triggerNextTickCalls();
     });
 }
 

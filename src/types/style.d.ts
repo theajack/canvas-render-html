@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 19:36:59
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 14:52:58
+ * @LastEditTime: 2022-03-12 22:10:16
  * @FilePath: /canvas-render-html/src/types/style.d.ts
  * @Description: Coding something
  */
@@ -19,12 +19,21 @@ export type TStylePosition = 'fixed' | 'absolute' | 'relative' | TStyleCommon;
 export type TStyleDisplay = 'block' | 'inline' | 'inline-block' | 'none' | TStyleCommon;
 
 export interface ILayout {
-    x: number;
+    x: number; // 定位
     y: number;
-    height: number;
+    height: number; // 实际边界尺寸
     width: number;
-    left: number;
+    left: number; // 偏移量
     top: number;
+    _collect(): void;
+    _reLayout(index?: number): void;
+}
+
+export interface IElementLayout extends ILayout {
+    layoutX: number; // 下一个元素放置的位置
+    layoutY: number;
+    readonly offsetHeight: number;
+    readonly offsetWidth: number;
 }
 
 export interface IBoundary {
