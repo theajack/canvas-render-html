@@ -7,6 +7,8 @@ import {INHERIT_STYLES, TextStyleNameMap, TEXT_STYLES} from './style-util';
 export class TextNodeStyle implements IStyleClass {
     _element: TextNode;
 
+    _inheritStyle: IStyleOptions = {};
+
     display: TStyleDisplay = 'inline';
     position: TStylePosition = 'relative';
 
@@ -59,7 +61,8 @@ export class TextNodeStyle implements IStyleClass {
     _initInheritStyles () {
         INHERIT_STYLES.forEach(k => { // 添加继承属性
             const value = this._getInheritStyle(k);
-            if (value) {
+            if (value && this._inheritStyle[k] !== value) {
+                this._inheritStyle[k] = value;
                 StyleChangeManager.collectSingleChange(this._element, k, value);
             }
         });

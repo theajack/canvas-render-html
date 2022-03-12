@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-01-08 15:32:27
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 15:07:49
+ * @LastEditTime: 2022-03-12 17:48:18
  * @FilePath: /canvas-render-html/test/cases/query-selector.ts
  * @Description: Coding something
  */
@@ -47,34 +47,35 @@ import {document} from '@src/packages/dom/document';
 //     `
 // });
 
-// renderHtmlToCanvas({
-//     html: /* html*/`
-//     <div class='d00 c1 c2 c3'>
-//         <div class='d1' style='color: #0f0'>
-//             <div class='d10'>d10</div>
-//         </div>
-//     </div>
-//     `,
-//     css: /* css*/`
-//     .d00 .d1{
-//         color: #f00
-//     }
-//     `
-// });
 renderHtmlToCanvas({
     html: /* html*/`
     <div class='d00 c1 c2 c3'>
-        <div style='color:#f00' class='d1'>
-            <div class='d10'>111111
-
-                <div class='d13' style='color:#666'>22222222</div>
-            </div>
+        <div class='dd1'>
+            <div class='d1'>d10</div>
         </div>
     </div>
     `,
     css: /* css*/`
+    .d00>.d1{
+        color: #f00
+    }
     `
 });
+(window as any).a = document.body.querySelector('.d00');
+// renderHtmlToCanvas({
+//     html: /* html*/`
+//     <div class='d00 c1 c2 c3'>
+//         <div style='color:#f00' class='d1'>
+//             <div class='d10'>111111
+
+//                 <div class='d13' style='color:#666'>22222222</div>
+//             </div>
+//         </div>
+//     </div>
+//     `,
+//     css: /* css*/`
+//     `
+// });
 export default [
     // {
     //     name: '测试 getElementById',

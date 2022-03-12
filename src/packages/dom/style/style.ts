@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 15:18:07
+ * @LastEditTime: 2022-03-12 17:29:08
  * @FilePath: /canvas-render-html/src/packages/dom/style/style.ts
  * @Description: Coding something
  */
@@ -108,14 +108,22 @@ export class Style implements IStyleClass {
                 this._inlineImportantKeys.add(key);
             }
         }
-
-        const styles = getContext('cssom').countStyles(this._element);
-        this._store = Object.assign({}, styles.styles); // ! important 消除引用关系
-        this._importantKeys = new Set(Object.keys(styles.importantStyles) as TStyleKey[]);
-
-        this._collectChange(styles.styles);
+        this._initStyleWithCssOM();
     }
 
+    _initStyleWithCssOM () {
+        const {styles, importantStyles} = getContext('cssom').countStyles(this._element);
+        for (const k in styles) {
+            const key = k as TStyleKey;
+            if (this._store[key] === styles[key]) {
+                delete styles[key];
+            }
+        }
+        this._store = Object.assign({}, styles); // ! 消除引用关系
+        this._importantKeys = new Set(Object.keys(importantStyles) as TStyleKey[]);
+        this._collectChange(styles);
+    }
+    
     _initInheritStyles () {
         this._inheritStyle = {};
         INHERIT_STYLES.forEach(k => { // 添加继承属性

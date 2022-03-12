@@ -9,13 +9,11 @@ import {triggerNextTickCalls} from './next-tick';
 
 export const StyleChangeManager = (() => {
 
-    const StyleChangeRoot = buildParentChooser();
     let StyleCollector: IJson<IStyleChangeCollect> = {};
     let empty = true;
 
     const clear = () => {
         StyleCollector = {};
-        StyleChangeRoot.clear();
         empty = true;
     };
     return {
@@ -27,10 +25,7 @@ export const StyleChangeManager = (() => {
             value: string
         ) {
             if (empty) empty = false;
-
-            if (node.nodeType === ENodeType.Element) {
-                StyleChangeRoot.add(node as Element);
-            }
+            
             const item = StyleCollector[node.__id];
             if (!item) {
                 StyleCollector[node.__id] = {
@@ -50,8 +45,8 @@ export const StyleChangeManager = (() => {
             node: Element,
             styles: IStyleOptions,
         ) {
+            if (Object.keys(styles).length === 0) return;
             if (empty) empty = false;
-            StyleChangeRoot.add(node);
             const item = StyleCollector[node.__id];
             if (!item) {
                 StyleCollector[node.__id] = {node, styles};
@@ -79,33 +74,38 @@ export const StyleChangeManager = (() => {
     };
 })();
 
-// let InheritStyleCollector: IJson<IStyleChangeCollect> = {};
-
-// export function collectInheritStyleChange (
-//     node: Node,
-//     name: TStyleKey,
-//     value: string,
-// ) {
-//     const item = InheritStyleCollector[node.__id];
-//     if (!item) {
-//         InheritStyleCollector[node.__id] = {
-//             node,
-//             styles: {[name]: value},
-//         };
-//     } else {
-//         item.styles[name] = value as any;
-//     }
-//     if (isRelayoutStyle(name as TStyleKey)) {
-//         collectLayoutChange(node);
-//     }
-// }
-
 // 处理选择器变化 attr、tagName 改变
 // 选择器变化 只需要收集最大的父元素即可
-const SelectorChangeRoot = buildParentChooser();
-export function collectSelectorChange (element: Element) {
-    SelectorChangeRoot.add(element);
-}
+export const SelectorChangeManager = (() => {
+    const rootElement = buildParentChooser();
+
+    function applySelectorChangeToElement (element: Node) {
+        element.style._initInheritStyles();
+        if (element.nodeType === ENodeType.Element) {
+            (element as Element).style._initStyleWithCssOM();
+            (element as Element)._traverseChild((child) => {
+                applySelectorChangeToElement(child);
+            });
+        }
+    }
+
+    return {
+        collectElement (element: Element) {
+            rootElement.add(element);
+        },
+        triggerChange () {
+            const root = rootElement.get();
+            if (root) {
+                console.log('triggerSelectorChange', root);
+                root._traverseSiblingFromCurrent((sibling) => {
+                    applySelectorChangeToElement(sibling);
+                });
+                rootElement.clear();
+            }
+        }
+    };
+})();
+
 
 const LayoutCollector: Node[] = [];
 export function collectLayoutChange (node: Node) {
@@ -113,13 +113,6 @@ export function collectLayoutChange (node: Node) {
         LayoutCollector.push(node);
     }
 }
-function triggerSelectorChange () {
-    // if (SelectorCollectorParent) {
-    //     // todo
-    //     SelectorCollectorParent = null;
-    // }
-}
-
 
 function triggerLayoutChange () {
 
@@ -129,7 +122,7 @@ export function initRenderManager (app: Application) {
     app.ticker.add(() => {
         triggerNextTickCalls();
 
-        triggerSelectorChange();
+        SelectorChangeManager.triggerChange();
         StyleChangeManager.triggerChange();
         triggerLayoutChange();
     });
@@ -154,11 +147,13 @@ function buildParentChooser () {
                 let parent = rootParent.parentElement;
         
                 if (parent?.__id === element.parentElement?.__id) {
+                    // root 与 element是兄弟 则取共同的父元素
                     rootParent = parent;
                     return;
                 }
         
                 while (true) {
+                    // 从当前root往上找 如果存在element 则将root设置为element
                     if (!parent || parent.tagName === EElementTagName.Body) return;
                     if (parent.__id === element.__id) {
                         rootParent = element;

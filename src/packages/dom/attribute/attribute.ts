@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-22 22:22:04
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-06 20:50:21
+ * @LastEditTime: 2022-03-12 17:12:57
  * @FilePath: /canvas-render-html/src/packages/dom/attribute/attribute.ts
  * @Description: Coding something
  */
@@ -16,25 +16,26 @@ export class AttributePair implements IAttributePair {
     private _value: string;
     get value () {return this._value;}
     set value (v: string) {
+        if (this._value === v) return;
         this._value = v;
         if (this.name === 'class') {
             this._element.classList._initClassName();
         } else if (this.name === 'style') {
             this._element.style._setStyleAttribute(v);
+        } else {
+            this._element._collectSelectorChange();
         }
-        
         // todo
     }
     _element: Element;
-    constructor (element: Element, name: TAttributeKey, value = '') {
+    constructor (element: Element, name: TAttributeKey) {
         this._element = element;
         this._name = name;
-        this._value = value;
     }
 }
 
 export class Attribute implements IAttributeOptions {
-    _nameList: TAttributeKey[] = [];
+    _nameList: Set<TAttributeKey>;
     style?: IAttributePair;
     id?: IAttributePair;
     class?: IAttributePair;
@@ -42,39 +43,39 @@ export class Attribute implements IAttributeOptions {
     name?: IAttributePair;
 
     _setAttribute (key: TAttributeKey, value: string) {
-        if (!this._nameList.includes(key)) {
-            this._nameList.push(key);
-        }
+        this._nameList.add(key);
         if (!this[key]) {
             this[key] = new AttributePair(this._element, key);
         }
+
         (this[key] as AttributePair).value = value; // AttributePair 对象中更新事件
-        
     }
     _getAttribute (key: TAttributeKey) {
         return this[key]?.value || '';
     }
     _hasAttribute (key: TAttributeKey) {
-        return this._nameList.includes(key);
+        return this._nameList.has(key);
     }
 
     _removeAttribute (key: TAttributeKey) {
         (this[key] as any) = undefined;
-        const index = this._nameList.indexOf(key);
-        if (index >= 0) this._nameList.splice(index, 1);
-        // todo 处理设置属性事件
+        if (this._nameList.has(key)) {
+            this._nameList.delete(key);
+            this._element._collectSelectorChange();
+            // todo 处理设置属性事件
+        }
     }
 
     _element: Element;
     constructor (element: Element) {
         this._element = element;
+        this._nameList = new Set();
         // console.log(this._element);
     }
 
     _initAttributes (attributes: IJson<string>) {
-        if (!attributes.style) {
-            attributes.style = '';
-        }
+        if (!attributes.style) attributes.style = ''; // 初始化 style
+        if (!attributes.class) attributes.class = ''; // 初始化 classList
         for (const k in attributes) {
             let value = attributes[k];
             if (value.indexOf('"') !== -1) {value = value.replace(/"/g, '\'');}

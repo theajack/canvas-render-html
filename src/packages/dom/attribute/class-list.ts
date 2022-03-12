@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-26 09:41:19
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-01 21:51:34
+ * @LastEditTime: 2022-03-12 16:55:31
  * @FilePath: /canvas-render-html/src/packages/dom/attribute/class-list.ts
  * @Description: Coding something
  */
@@ -10,6 +10,8 @@
 import {Element} from '../elements/element';
 
 export class ClassList {
+
+    _inited = false;
     
     get value () {return this._element.attributes.class?.value.trim() || '';};
     set value (v: string) {
@@ -32,12 +34,20 @@ export class ClassList {
             }
         }
         this.length = length;
+
+        if (this._inited) {
+            this._element._collectSelectorChange();
+        } else {
+            this._inited = true;
+        }
+
     }
     /** Returns the number of strings in strings. */
     length: number = 0;
     add (value: string) {
         if (!this.contains(value)) {
             this.value = `${this.value} ${value}`;
+            this._element._collectSelectorChange();
         }
     };
     entries () {
@@ -56,11 +66,13 @@ export class ClassList {
     remove (value: string) {
         if (this.contains(value)) {
             this.value = this.value.replace(new RegExp(`(^| )${value.trim()}( |$)`, 'g'), ' ').trim();
+            this._element._collectSelectorChange();
         }
     };
     replace (value: string, replace: string) {
         if (this.contains(value)) {
             this.value = this.value.replace(new RegExp(`(^| )${value.trim()}( |$)`, 'g'), ` ${replace} `).trim();
+            this._element._collectSelectorChange();
         }
     };
     toString () {

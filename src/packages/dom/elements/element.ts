@@ -2,12 +2,13 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 14:34:03
+ * @LastEditTime: 2022-03-12 16:36:13
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
 
 import {Style} from '@src/packages/dom/style/style';
+import {SelectorChangeManager} from '@src/packages/render/render-manager';
 import {TAttributeKey} from '@src/types/attribute';
 import {IElement} from '@src/types/dom';
 import {EElementName, EElementTagName, ENodeType} from '@src/types/enum';
@@ -182,18 +183,6 @@ export abstract class Element extends Node implements IElement {
         super._onParseEnd();
     }
 
-    _traverseChild (callback: (n: Node)=>void, reverse = false) {
-        const nodes = this.childNodes;
-
-        if (reverse) {
-            for (let i = nodes.length - 1; i >= 0; i --)
-                callback(nodes[i]);
-        } else {
-            for (let i = 0; i < nodes.length; i ++)
-                callback(nodes[i]);
-        }
-    }
-
     getAttribute (key: TAttributeKey) {
         return this.attributes._getAttribute(key);
     }
@@ -207,6 +196,56 @@ export abstract class Element extends Node implements IElement {
     }
     hasAttribute (key: TAttributeKey) {
         return this.attributes._hasAttribute(key);
+    }
+
+    getElementById (id: string) {return getElementById(this, id);}
+    querySelector (selector: string) {return querySelector(this, selector);}
+    querySelectorAll (selector: string) {return querySelectorAll(this, selector);}
+
+    get nextSibling (): Node | null {
+        if (!this.parentElement) return null;
+        const children = this.parentElement.children;
+        return children[children.indexOf(this) + 1] || null;
+    }
+    get previousSibling (): Node | null {
+        if (!this.parentElement) return null;
+        const children = this.parentElement.children;
+        return children[children.indexOf(this) - 1] || null;
+    }
+
+    _getIndex () {
+        if (!this.parentElement) return -1;
+        return this.parentElement.children.indexOf(this);
+    }
+
+    _traverseChild (callback: (n: Node)=>void, reverse = false) {
+        const nodes = this.childNodes;
+
+        if (reverse) {
+            for (let i = nodes.length - 1; i >= 0; i --)
+                callback(nodes[i]);
+        } else {
+            for (let i = 0; i < nodes.length; i ++)
+                callback(nodes[i]);
+        }
+    }
+    _traverseChildElement (callback: (n: Element)=>void) {
+        const nodes = this.children;
+
+        for (let i = 0; i < nodes.length; i ++)
+            callback(nodes[i]);
+    }
+
+    _traverseSiblingFromCurrent (callback: (element: Element)=>void) {
+        const children = this.parentElement?.children;
+        if (!children) {
+            callback(this);
+        } else {
+            const index = this._getIndex();
+            for (let i = index; i < children.length; i++) {
+                callback(children[i]);
+            }
+        }
     }
 
     _clearChild () {
@@ -228,20 +267,8 @@ export abstract class Element extends Node implements IElement {
         // 重排计算
     }
 
-    getElementById (id: string) {return getElementById(this, id);}
-    querySelector (selector: string) {return querySelector(this, selector);}
-    querySelectorAll (selector: string) {return querySelectorAll(this, selector);}
-
-
-    get nextSibling (): Node | null {
-        if (!this.parentElement) return null;
-        const children = this.parentElement.children;
-        return children[children.indexOf(this) + 1] || null;
-    }
-    get previousSibling (): Node | null {
-        if (!this.parentElement) return null;
-        const children = this.parentElement.children;
-        return children[children.indexOf(this) - 1] || null;
+    _collectSelectorChange () {
+        SelectorChangeManager.collectElement(this);
     }
 }
 
