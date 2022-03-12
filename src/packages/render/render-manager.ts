@@ -126,6 +126,7 @@ export const LayoutChangeManager = (() => {
             // rootElement.get()?.parentElement?._layout._reLayout();
             if (collector.length > 0) {
                 // todo 待优化性能 对比局部relayout
+                // ! bugfix doc.body.children[0].children[0].innerHTML = '<div style="color: #f44">11</div><div style="color: #4f4">222</div>'
                 document.body._layout._reLayout();
                 console.log('triggerSelectorChange', collector);
                 collector = [];
