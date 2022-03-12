@@ -1,7 +1,7 @@
 import {StyleChangeManager} from '@src/packages/render/render-manager';
 import {IStyleClass, IStyleOptions, TStyleDisplay, TStyleKey, TStylePosition} from '@src/types/style';
 import {TextNode} from '../elements/text-node';
-import {DefaultStyle} from './default-style';
+import {getDefaultStyle} from './default-style';
 import {INHERIT_STYLES, TextStyleNameMap, TEXT_STYLES} from './style-util';
 
 export class TextNodeStyle implements IStyleClass {
@@ -23,15 +23,6 @@ export class TextNodeStyle implements IStyleClass {
         this._element = element;
     }
 
-    _setStyle (name: TStyleKey) {
-        if (!TEXT_STYLES.includes(name)) return;
-        this._applyStyleIntoPixi(name);
-
-        // if (isRelayoutStyle(name)) {
-        //     this._element.parentElement?._layout._reLayoutChild(this._element);
-        // }
-    }
-
     _applyStyleIntoPixi (name: TStyleKey) {
         const key = TextStyleNameMap[name];
         if (key) { // 直接可以将样式映射成pixi text的样式
@@ -45,6 +36,7 @@ export class TextNodeStyle implements IStyleClass {
     }
     _applySingleStyleToPixi (key: string, value: string) {
         (this._element._container.style as any)[key] = value;
+        // todo 其他样式
     }
     _renderStyles (styles: IStyleOptions) {
         for (const k in styles) {
@@ -56,14 +48,9 @@ export class TextNodeStyle implements IStyleClass {
         StyleChangeManager.collectSingleChange(this._element, name, value);
     }
 
-    _getDefaultStyle (name: TStyleKey) {
-        const value = DefaultStyle[name];
-        return (typeof value === 'function') ? value(this._element) : value;
-    }
-
     _getInheritStyle (name: TStyleKey): string { // todo
         if (!this._element.parentElement) {
-            return this._getDefaultStyle(name);
+            return getDefaultStyle(this._element, name);
         } else {
             return this._element.parentElement.style[name];
         }

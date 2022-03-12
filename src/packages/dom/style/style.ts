@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 15:06:22
+ * @LastEditTime: 2022-03-12 15:18:07
  * @FilePath: /canvas-render-html/src/packages/dom/style/style.ts
  * @Description: Coding something
  */
@@ -13,7 +13,7 @@ import {parseStyleAttribute} from './style-parser';
 import {INHERIT_STYLES, isImportantValue, isInheritStyle, parseCssImportantValue} from './style-util';
 import {getContext} from '@src/packages/context/context';
 import {StyleChangeManager} from '@src/packages/render/render-manager';
-import {DefaultStyle} from './default-style';
+import {getDefaultStyle} from './default-style';
 
 export class Style implements IStyleClass {
     // 内联样式中的 important
@@ -53,13 +53,7 @@ export class Style implements IStyleClass {
         if (
             (typeof this._store[name] === 'undefined')
         ) {
-            // if (!isInheritStyle(name) || this._element.tagName === EElementTagName.Body) {
-            //     const value = DefaultStyle[name];
-            //     return (typeof value === 'function') ? value(this._element) : value;
-            // } else {
-            //     return this._element.parentElement?.style[name];
-            // }
-            return this._inheritStyle[name] || this._getDefaultStyle(name);
+            return this._inheritStyle[name] || getDefaultStyle(this._element, name);
         } else {
             return this._store[name];
         }
@@ -70,19 +64,13 @@ export class Style implements IStyleClass {
             (typeof this._store[name] === 'undefined')
         ) {
             if (!this._element.parentElement) {
-                return this._getDefaultStyle(name);
+                return getDefaultStyle(this._element, name);
             } else {
                 return this._element.parentElement.style[name];
             }
         }
         return '';
     }
-
-    _getDefaultStyle (name: TStyleKey) {
-        const value = DefaultStyle[name];
-        return (typeof value === 'function') ? value(this._element) : value;
-    }
-
     _setStyle (name: TStyleKey, value: string) {
         if (value !== this._store[name]) {
             this._inlineStyle[name] = value;
