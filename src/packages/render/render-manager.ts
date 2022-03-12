@@ -2,6 +2,7 @@ import {EElementTagName, ENodeType} from '@src/types/enum';
 import {IStyleChangeCollect, IStyleOptions, TStyleKey} from '@src/types/style';
 import {IJson} from '@src/types/util';
 import {Application} from 'pixi.js';
+import {document} from '../dom/document';
 import {Element} from '../dom/elements/element';
 import {Node} from '../dom/elements/node';
 import {isRelayoutStyle} from '../dom/style/style-util';
@@ -122,9 +123,10 @@ export const LayoutChangeManager = (() => {
             }
         },
         triggerChange () {
-            rootElement.get()?._layout._reLayout(0);
+            // rootElement.get()?.parentElement?._layout._reLayout();
             if (collector.length > 0) {
-                // todo
+                // todo 待优化性能 对比局部relayout
+                document.body._layout._reLayout();
                 console.log('triggerSelectorChange', collector);
                 collector = [];
                 rootElement.clear();

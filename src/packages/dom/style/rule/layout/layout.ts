@@ -11,7 +11,7 @@ import {Node} from '@src/packages/dom/elements/node';
 import {TextNode} from '@src/packages/dom/elements/text-node';
 import {LayoutChangeManager} from '@src/packages/render/render-manager';
 import {IElementLayout, ILayout} from '@src/types/style';
-import {IPosition} from '@src/types/util';
+import {IPosition, ISize} from '@src/types/util';
 // import {ENodeType} from '@src/types/enum';
 import {Element} from '../../../elements/element';
 import {countStyleLength} from '../../style-util';
@@ -59,6 +59,8 @@ export class TextLayout extends LayoutBase implements ILayout {
 // element自身的实际layout尺寸
 export class Layout extends LayoutBase implements IElementLayout {
     
+    _lastSize: ISize | null = null;
+
     protected _element: Element;
 
     get width (): number {
@@ -220,6 +222,7 @@ export class Layout extends LayoutBase implements IElementLayout {
 
     // 重排子元素
     _reLayout (index = 0) {
+        this._reset();
         const element = this._element;
         const nodes = element.childNodes;
         this._blockParentWidth = this._countBlockParentWidth();
@@ -229,6 +232,16 @@ export class Layout extends LayoutBase implements IElementLayout {
         }
 
         super._reLayout();
+
+        // const width = this.width;
+        // const height = this.height;
+        // if (!this._lastSize) {
+        //     this._lastSize = {width, height};
+        // } else {
+        //     if (this._lastSize.width !== width || this._lastSize.height !== height) {
+        //         this._element.parentElement?._layout._reLayout();
+        //     }
+        // }
     }
 
     _reset () {

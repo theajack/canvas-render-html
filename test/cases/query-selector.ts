@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-01-08 15:32:27
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 23:20:31
+ * @LastEditTime: 2022-03-12 23:24:51
  * @FilePath: /canvas-render-html/test/cases/query-selector.ts
  * @Description: Coding something
  */
@@ -51,6 +51,8 @@ renderHtmlToCanvas({
     }
     `
 });
+
+// todo doc.querySelector('.d10').style.fontSize = '30px'
 
 // renderHtmlToCanvas({
 //     html: /* html*/`

@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 16:36:13
+ * @LastEditTime: 2022-03-12 23:52:36
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
@@ -20,6 +20,7 @@ import {parseHtml} from '../parser/parser';
 import {getElementById, querySelector, querySelectorAll} from '../parser/query-selector';
 // import {parseHtml} from '../parser/parser';
 import {Layout} from '../style/rule/layout/layout';
+import {createTextNodeWithParent} from './create-element';
 import {Node} from './node';
 import {TextNode} from './text-node';
 
@@ -53,9 +54,7 @@ export abstract class Element extends Node implements IElement {
     }
     set innerText (v: string) {
         this._clearChild();
-        const textNode = new TextNode();
-        textNode.textContent = v;
-        this.appendChild(textNode);
+        createTextNodeWithParent(this, v);
     }
     get textContent () {return this.innerText;}
     set textContent (v: string) {this.innerText = v;}

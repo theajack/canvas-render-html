@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 23:19:50
+ * @LastEditTime: 2022-03-12 23:45:10
  * @FilePath: /canvas-render-html/src/packages/dom/elements/text-node.ts
  * @Description: Coding something
  */
@@ -33,15 +33,17 @@ export class TextNode extends Node {
         this._boundary = new TextNodeBoundary(this);
         this._layout = new TextLayout(this);
         this.style = new TextNodeStyle(this);
+        this.style.display = 'inline';
     }
 
     private _textContent: string;
     get textContent () {return this._textContent;}
     set textContent (v: string) {
         // v = v.replace(/\n/g, '').trim();
+        if (v === this._textContent) return;
         this._textContent = v;
         this._container.text = v;
-        this.style.display = 'inline';
+        this._layout._collect();
     }
 
     _onParseStart () {

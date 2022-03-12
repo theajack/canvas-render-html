@@ -11,7 +11,7 @@ import {EElementName} from '@src/types/enum';
 import {Parser} from 'htmlparser2';
 import {onParseStyleTag} from '../css/global-css';
 import {BodyElement} from '../elements/component/body';
-import {createElement, createTextNode} from '../elements/create-element';
+import {createElement, createTextNodeWithParent} from '../elements/create-element';
 import {Element} from '../elements/element';
 import {onParseScriptTag} from '../script/global-script';
 
@@ -46,17 +46,7 @@ export function parseHtml (
             } else if (currentTag === EElementName.Script) {
                 onParseScriptTag(text);
             } else {
-                const textNode = createTextNode();
-                textNode.textContent = text;
-                const parent = getLast();
-                parent.appendChild(textNode);
-                textNode._onParseStart();
-                textNode._onParseEnd();
-                // textNode.style._renderStyles();
-                // debugger;
-
-                // parent._layout._layoutLastChild();
-            // console.log('ontext', text);
+                createTextNodeWithParent(getLast(), text);
             }
         },
         onclosetag () {
