@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 17:29:08
+ * @LastEditTime: 2022-03-13 11:08:20
  * @FilePath: /canvas-render-html/src/packages/dom/style/style.ts
  * @Description: Coding something
  */
@@ -113,15 +113,16 @@ export class Style implements IStyleClass {
 
     _initStyleWithCssOM () {
         const {styles, importantStyles} = getContext('cssom').countStyles(this._element);
+        const changes: IStyleOptions = {}; // 记录改变的样式
         for (const k in styles) {
             const key = k as TStyleKey;
-            if (this._store[key] === styles[key]) {
-                delete styles[key];
+            if (this._store[key] !== styles[key]) {
+                changes[key] = styles[key];
             }
         }
         this._store = Object.assign({}, styles); // ! 消除引用关系
         this._importantKeys = new Set(Object.keys(importantStyles) as TStyleKey[]);
-        this._collectChange(styles);
+        this._collectChange(changes);
     }
     
     _initInheritStyles () {

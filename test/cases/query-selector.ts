@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-01-08 15:32:27
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 23:24:51
+ * @LastEditTime: 2022-03-13 10:13:44
  * @FilePath: /canvas-render-html/test/cases/query-selector.ts
  * @Description: Coding something
  */
@@ -16,13 +16,14 @@ import {document} from '@src/packages/dom/document';
 
 (window as any).doc = document;
 
+// <span>111</span><span>222</span>
+// <div>333</div>
+// <span>111</span><span>222</span>
 renderHtmlToCanvas({
     html: /* html*/`
     <div class='d00 c1 c2 c3'>
         <div>
-            <span>111</span><span>222</span>
-            <div>333</div>
-            <span>111</span><span>222</span>
+        <div class="d1">11</div><div class='xx' style="color: #4f4">222</div>
         </div>
         <div class='d1' style='color: #0f0'>
             <div class='d10'>d10</div>

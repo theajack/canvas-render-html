@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:55:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 23:19:46
+ * @LastEditTime: 2022-03-13 10:17:19
  * @FilePath: /canvas-render-html/src/packages/dom/parser/parser.ts
  * @Description: Coding something
  */
@@ -22,7 +22,6 @@ export function parseHtml (
     const elementStack: Element[] = [parentElement];
     const getLast  = () => elementStack[elementStack.length - 1];
     let currentTag: EElementName;
-    // debugger;
     const parser = new Parser({
         onopentag (name: EElementName, attributes) {
             currentTag = name;
@@ -30,13 +29,8 @@ export function parseHtml (
                 const current = createElement(name);
                 getLast().appendChild(current);
                 elementStack.push(current);
-
                 current._onParseStart(attributes);
-                
             }
-
-            // currentNode = createElement(name);
-            // console.log('onopentag', name, attributes);
         },
         ontext (text) {
             text = text.replace(/\n/g, '').trim();
@@ -53,13 +47,9 @@ export function parseHtml (
             if (currentTag !== EElementName.Script && currentTag !== EElementName.Style) {
                 const current = elementStack.pop() as Element;
                 current._onParseEnd();
-                // getLast()._layout._layoutLastChild();
-                // debugger;
-                // console.log(tagname);
             }
         },
         onend () {
-            // debugger;
         }
     });
     parser.write(htmlString);

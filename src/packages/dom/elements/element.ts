@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 23:52:36
+ * @LastEditTime: 2022-03-13 10:50:05
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
@@ -245,14 +245,12 @@ export abstract class Element extends Node implements IElement {
 
     _clearChild () {
         this._layout._reset();
-        this._traverseChild(node => {
-            node._clear();
-        }, true);
+        this._traverseChild(node => {node._clear();}, true);
     }
 
     _clear () {
         super._clear();
-        this._clearChild();
+        this._traverseChild(node => {node._clear();}, true);
         const _this = this as any;
         _this.attributes = null;
         _this.sprite = null;
