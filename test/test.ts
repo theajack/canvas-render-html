@@ -1,7 +1,8 @@
 import {ITestConfigItem} from 'easy-test-lib';
 import start from './test-main';
 const caseFiles = [
-    'query-selector',
+    // 'query-selector',
+    'id-map'
 ];
 
 const cases: ITestConfigItem[] = [];

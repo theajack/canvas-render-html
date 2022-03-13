@@ -27,15 +27,18 @@
 
 ## Todo List
 
-1. 更多样式的完善
-2. css支持
-3. 事件支持
-4. z-index支持
-5. flex布局
-6. DOM 与 window api的完善
-7. 盒模型
-8. img、audio、video等标签的支持
-9. ...
+1. 更多样式的完善 
+2. css支持 done
+3. 重绘制重排优化 done
+4. 事件支持
+5. style标签支持
+6. script标签支持
+7. z-index支持
+8. flex布局
+9. DOM 与 window api的完善
+10. 盒模型
+11. img、audio、video等标签的支持
+12. ...
 
 ## 原理
 
@@ -76,7 +79,7 @@ pixi提供ui显示 背后有不同端各自adapter实现
 2. audio web: Audio； 小游戏 wx.createWebAudioContext
 3. video web: video； 小游戏 wx.createVideo （将video至于顶层 调整位置） // wx.createVideoDecoder 方案2：解码逐帧绘制
 
-重排 => 重绘 or => 重绘 => 重排 
+重绘 => 重排 
 
 
 
@@ -110,3 +113,9 @@ pixi提供ui显示 背后有不同端各自adapter实现
 对于block元素 使用  -->
 
 pixi绘制完成之后 元素的初始长宽都已经计算好了
+
+使用renderManager 进行统一管理重绘和重排
+
+收集样式改变、选择器改变 进行统一局部重绘 优化性能
+
+收集可造成重排的改变进行 进行统一重排，最小化重排局部改变 优化性能

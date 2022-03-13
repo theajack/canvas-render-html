@@ -2,14 +2,13 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 23:45:10
+ * @LastEditTime: 2022-03-13 11:33:38
  * @FilePath: /canvas-render-html/src/packages/dom/elements/text-node.ts
  * @Description: Coding something
  */
 
 import {ENodeType} from '@src/types/enum';
 import {Text} from 'pixi.js';
-import {TextNodeBoundary} from '../style/rule/layout/boundary';
 import {TextLayout} from '../style/rule/layout/layout';
 import {TextNodeStyle} from '../style/text-style';
 import {Element} from './element';
@@ -24,13 +23,10 @@ export class TextNode extends Node {
     _container: Text;
 
     style: TextNodeStyle;
-
-    _boundary: TextNodeBoundary;
     
     constructor () {
         super();
         this._container = new Text('');
-        this._boundary = new TextNodeBoundary(this);
         this._layout = new TextLayout(this);
         this.style = new TextNodeStyle(this);
         this.style.display = 'inline';

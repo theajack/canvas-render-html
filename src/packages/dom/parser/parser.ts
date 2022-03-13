@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:55:49
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-13 10:17:19
+ * @LastEditTime: 2022-03-13 12:05:01
  * @FilePath: /canvas-render-html/src/packages/dom/parser/parser.ts
  * @Description: Coding something
  */
@@ -11,7 +11,7 @@ import {EElementName} from '@src/types/enum';
 import {Parser} from 'htmlparser2';
 import {onParseStyleTag} from '../css/global-css';
 import {BodyElement} from '../elements/component/body';
-import {createElement, createTextNodeWithParent} from '../elements/create-element';
+import {createElement} from '../elements/create-element';
 import {Element} from '../elements/element';
 import {onParseScriptTag} from '../script/global-script';
 
@@ -40,7 +40,7 @@ export function parseHtml (
             } else if (currentTag === EElementName.Script) {
                 onParseScriptTag(text);
             } else {
-                createTextNodeWithParent(getLast(), text);
+                getLast()._appendText(text);
             }
         },
         onclosetag () {

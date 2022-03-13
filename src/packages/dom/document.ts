@@ -28,7 +28,7 @@ export class Document {
         return createElement(name);
     }
     getElementById (id: string) {
-        return getElementById(getBodyMockParent(), id);
+        return getElementById(id);
     }
     querySelector (selector: string) {
         return querySelector(getBodyMockParent(), selector);
@@ -51,3 +51,5 @@ export class Document {
 };
 
 export const document = new Document();
+
+(window as any).doc = document;

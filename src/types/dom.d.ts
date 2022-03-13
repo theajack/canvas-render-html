@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-25 00:43:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-10 09:16:33
+ * @LastEditTime: 2022-03-13 20:15:24
  * @FilePath: /canvas-render-html/src/types/dom.d.ts
  * @Description: Coding something
  */
@@ -23,7 +23,6 @@ export interface IElement extends INode {
     insertBefore(node: INode, refer: INode): void;
     getAttribute(key: TAttributeKey): string;
     setAttribute(key: TAttributeKey, value: string): void;
-    getElementById(id: string): IElement | null;
     querySelector(selector: string): IElement | null;
     querySelectorAll(selector: string): IElement[];
 }

@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-13 10:50:05
+ * @LastEditTime: 2022-03-13 18:58:19
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
@@ -11,19 +11,17 @@ import {Style} from '@src/packages/dom/style/style';
 import {SelectorChangeManager} from '@src/packages/render/render-manager';
 import {TAttributeKey} from '@src/types/attribute';
 import {IElement} from '@src/types/dom';
-import {EElementName, EElementTagName, ENodeType} from '@src/types/enum';
+import {ECompareResult, EElementName, EElementTagName, ENodeType} from '@src/types/enum';
 import {IJson} from '@src/types/util';
 import {Container, Sprite} from 'pixi.js';
 import {Attribute} from '../attribute/attribute';
 import {ClassList} from '../attribute/class-list';
 import {parseHtml} from '../parser/parser';
-import {getElementById, querySelector, querySelectorAll} from '../parser/query-selector';
+import {querySelector, querySelectorAll} from '../parser/query-selector';
 // import {parseHtml} from '../parser/parser';
 import {Layout} from '../style/rule/layout/layout';
-import {createTextNodeWithParent} from './create-element';
 import {Node} from './node';
 import {TextNode} from './text-node';
-
 export abstract class Element extends Node implements IElement {
     _sprite: Sprite;
     nodeType = ENodeType.Element;
@@ -54,8 +52,18 @@ export abstract class Element extends Node implements IElement {
     }
     set innerText (v: string) {
         this._clearChild();
-        createTextNodeWithParent(this, v);
+        this._appendText(v);
     }
+
+    _appendText (text: string) {
+        const textNode = new TextNode();
+        textNode.textContent = text;
+        this.appendChild(textNode);
+        textNode._onParseStart();
+        textNode._onParseEnd();
+        return textNode;
+    }
+
     get textContent () {return this.innerText;}
     set textContent (v: string) {this.innerText = v;}
 
@@ -193,7 +201,6 @@ export abstract class Element extends Node implements IElement {
         return this.attributes._hasAttribute(key);
     }
 
-    getElementById (id: string) {return getElementById(this, id);}
     querySelector (selector: string) {return querySelector(this, selector);}
     querySelectorAll (selector: string) {return querySelectorAll(this, selector);}
 
@@ -252,6 +259,7 @@ export abstract class Element extends Node implements IElement {
         super._clear();
         this._traverseChild(node => {node._clear();}, true);
         const _this = this as any;
+        this.attributes._markRemoveIdAttr();
         _this.attributes = null;
         _this.sprite = null;
         _this._container = null;
@@ -260,6 +268,18 @@ export abstract class Element extends Node implements IElement {
 
     _collectSelectorChange () {
         SelectorChangeManager.collectElement(this);
+    }
+
+    // 比较两个子元素（id）的先后顺序
+    _compareChildrenOrder (id1: number, id2: number): ECompareResult {
+        if (id1 === id2) return ECompareResult.EVEN;
+        const nodes = this.childNodes;
+        for (let i = 0; i < nodes.length; i++) {
+            const id = nodes[i].__id;
+            if (id === id1) return ECompareResult.MORE;
+            if (id === id2) return ECompareResult.LESS;
+        }
+        return ECompareResult.UNKNOW;
     }
 }
 

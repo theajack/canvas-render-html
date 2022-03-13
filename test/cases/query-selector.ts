@@ -2,28 +2,22 @@
  * @Author: tackchen
  * @Date: 2022-01-08 15:32:27
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-13 10:13:44
+ * @LastEditTime: 2022-03-13 21:25:16
  * @FilePath: /canvas-render-html/test/cases/query-selector.ts
  * @Description: Coding something
  */
 
 import renderHtmlToCanvas from '@src/index';
 import {document} from '@src/packages/dom/document';
-// import {Element} from '@src/packages/dom/elements/element';
-// import {isElementMatchSelector} from '@src/packages/dom/parser/query-selector';
-// import {matchSelectorToken, parseSelector} from '@src/packages/dom/parser/selector-parser';
+import {Element} from '@src/packages/dom/elements/element';
+import {isElementMatchSelector} from '@src/packages/dom/parser/query-selector';
+import {matchSelectorToken, parseSelector} from '@src/packages/dom/parser/selector-parser';
 
-
-(window as any).doc = document;
-
-// <span>111</span><span>222</span>
-// <div>333</div>
-// <span>111</span><span>222</span>
 renderHtmlToCanvas({
     html: /* html*/`
     <div class='d00 c1 c2 c3'>
         <div>
-        <div class="d1">11</div><div class='xx' style="color: #4f4">222</div>
+        <div id='11' class="d1">11</div><div class='xx' style="color: #4f4">222</div>
         </div>
         <div class='d1' style='color: #0f0'>
             <div class='d10'>d10</div>
@@ -53,116 +47,75 @@ renderHtmlToCanvas({
     `
 });
 
-// todo doc.querySelector('.d10').style.fontSize = '30px'
-
-// renderHtmlToCanvas({
-//     html: /* html*/`
-//     <div class='d00 c1 c2 c3'>
-//         <div class='dd1'>
-//             <div class='d1'>d10000</div>
-//         </div>
-//         <div class='d1'>d10</div>
-//     </div>
-//     `,
-//     css: /* css*/`
-//     .d00>.d1{
-//         color: #f00
-//     }
-//     `
-// });
-
-// renderHtmlToCanvas({
-//     html: /* html*/`<div>111</div><div>2222</div>`,
-//     css: /* css*/`
-//     .d00>.d1{
-//         color: #f00
-//     }
-//     `
-// });
-(window as any).a = document.body.querySelector('.d00');
-// renderHtmlToCanvas({
-//     html: /* html*/`
-//     <div class='d00 c1 c2 c3'>
-//         <div style='color:#f00' class='d1'>
-//             <div class='d10'>111111
-
-//                 <div class='d13' style='color:#666'>22222222</div>
-//             </div>
-//         </div>
-//     </div>
-//     `,
-//     css: /* css*/`
-//     `
-// });
 export default [
-    // {
-    //     name: '测试 getElementById',
-    //     test () {
-    //         const element = document.getElementById('id_d11');
-    //         return element?.innerText;
-    //     },
-    //     expect: 'd11',
-    // }, {
-    //     name: '测试 querySelector',
-    //     test () {
-    //         return [
-    //         document.querySelector('.d1')?.innerText,
-    //         document.querySelector('.d1 .d12')?.innerText,
-    //         document.querySelector('div .d11')?.innerText,
-    //         document.querySelector('.d2 .d12')?.innerText,
-    //         ];
-    //     },
-    //     expect: ['d10d11d12', 'd12', 'd11', undefined],
-    // }, {
-    //     name: '测试 querySelector combinator',
-    //     test () {
-    //         return [
-    //         document.querySelector('.d4 .d42')?.innerText,
-    //         document.querySelector('.d4 + .d42')?.innerText,
-    //         document.querySelector('.d4 > .d42')?.innerText,
-    //         ];
-    //     },
-    //     expect: ['d42', '+d42', '>d42'],
-    // }, {
-    //     name: '测试 isElementMatchSelector',
-    //     test () {
-    //         const element = document.getElementById('id_d11') as Element;
-    //         return [
-    //             isElementMatchSelector(element, parseSelector('.d1 .d11')),
-    //             isElementMatchSelector(element, parseSelector('div .d11')),
-    //             isElementMatchSelector(element, parseSelector('.d2 .d11')),
-    //             isElementMatchSelector(element, parseSelector('.d42')),
-    //             isElementMatchSelector(element, parseSelector('.d10 + .d11')),
-    //             isElementMatchSelector(element, parseSelector('.d10 ~ .d11')),
-    //             isElementMatchSelector(element, parseSelector('.d1 > .d11')),
-    //             isElementMatchSelector(element, parseSelector('.d00 > .d11')),
-    //         ];
-    //     },
-    //     expect: [true, true, false, false, false, true, true, false ],
-    // }, {
-    //     name: '测试 matchSelectorToken',
-    //     test () {
-    //         const element = document.getElementById('id_d11') as Element;
-    //         return [
-    //             matchSelectorToken(element, parseSelector('[id=id_d11]')[0]),
-    //             matchSelectorToken(element, parseSelector('[id^=id_]')[0]),
-    //             matchSelectorToken(element, parseSelector('#id_d11')[0]),
-    //             matchSelectorToken(element, parseSelector('.d11')[0]),
-    //             matchSelectorToken(element, parseSelector('div')[0]),
-    //             matchSelectorToken(element, parseSelector('[id=id_d12]')[0]),
-    //         ];
-    //     },
-    //     expect: [true, true, true, true, true, false],
-    // }, {
-    //     name: '测试 other',
-    //     test () {
-    //         return [
-    //             document.getElementsByClassName('c3  c1 ').length,
-    //             document.getElementsByName('aa').length,
-    //             document.getElementsByTagName('span').length
-    //         ];
-    //     },
-    //     expect: [2, 2, 3],
-    // }
+    {
+        name: '测试 getElementById',
+        test () {
+            const element = document.getElementById('id_d11');
+            return element?.innerText;
+        },
+        expect: 'd11',
+    }, {
+        name: '测试 querySelector',
+        test () {
+            return [
+            document.querySelector('.d1')?.innerText,
+            document.querySelector('.d1 .d12')?.innerText,
+            document.querySelector('div .d11')?.innerText,
+            document.querySelector('.d2 .d12')?.innerText,
+            ];
+        },
+        expect: ['d10d11d12', 'd12', 'd11', undefined],
+    }, {
+        name: '测试 querySelector combinator',
+        test () {
+            return [
+            document.querySelector('.d4 .d42')?.innerText,
+            document.querySelector('.d4 + .d42')?.innerText,
+            document.querySelector('.d4 > .d42')?.innerText,
+            ];
+        },
+        expect: ['d42', '+d42', '>d42'],
+    }, {
+        name: '测试 isElementMatchSelector',
+        test () {
+            const element = document.getElementById('id_d11') as Element;
+            return [
+                isElementMatchSelector(element, parseSelector('.d1 .d11')),
+                isElementMatchSelector(element, parseSelector('div .d11')),
+                isElementMatchSelector(element, parseSelector('.d2 .d11')),
+                isElementMatchSelector(element, parseSelector('.d42')),
+                isElementMatchSelector(element, parseSelector('.d10 + .d11')),
+                isElementMatchSelector(element, parseSelector('.d10 ~ .d11')),
+                isElementMatchSelector(element, parseSelector('.d1 > .d11')),
+                isElementMatchSelector(element, parseSelector('.d00 > .d11')),
+            ];
+        },
+        expect: [true, true, false, false, false, true, true, false ],
+    }, {
+        name: '测试 matchSelectorToken',
+        test () {
+            const element = document.getElementById('id_d11') as Element;
+            return [
+                matchSelectorToken(element, parseSelector('[id=id_d11]')[0]),
+                matchSelectorToken(element, parseSelector('[id^=id_]')[0]),
+                matchSelectorToken(element, parseSelector('#id_d11')[0]),
+                matchSelectorToken(element, parseSelector('.d11')[0]),
+                matchSelectorToken(element, parseSelector('div')[0]),
+                matchSelectorToken(element, parseSelector('[id=id_d12]')[0]),
+            ];
+        },
+        expect: [true, true, true, true, true, false],
+    }, {
+        name: '测试 other',
+        test () {
+            return [
+                document.getElementsByClassName('c3  c1 ').length,
+                document.getElementsByName('aa').length,
+                document.getElementsByTagName('span').length
+            ];
+        },
+        expect: [2, 2, 3],
+    }
 ];
 

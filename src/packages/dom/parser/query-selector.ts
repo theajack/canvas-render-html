@@ -8,27 +8,32 @@
 
 import {IParselToken, TParselCombinatorContent} from 'parsel-js';
 import {Element} from '../elements/element';
+import {getElementByAttrIdFromMap} from './id-map';
 import {matchSelectorToken, parseSelector} from './selector-parser';
 
-// todo 待修改成 map模式 最高效查询
-export function getElementById (element: Element, id: string): Element | null {
-    const children = element.children;
-    if (children.length > 0) {
-        for (const child of children) {
-            if (child.attributes.id?.value === id) {
-                return child;
-            } else {
-                const result = getElementById(child, id);
-                if (result) return result;
-            }
-        }
-    }
-    return null;
+export function getElementById (id: string): Element | null {
+    // 修改成 map模式 最高效查询
+    return getElementByAttrIdFromMap(id);
+    // const children = element.children;
+    // if (children.length > 0) {
+    //     for (const child of children) {
+    //         if (child.attributes.id?.value === id) {
+    //             return child;
+    //         } else {
+    //             const result = getElementById(child, id);
+    //             if (result) return result;
+    //         }
+    //     }
+    // }
+    // return null;
 }
 
 export function querySelector (element: Element, selector: string): Element | null{
     // const children = element.children;
     const tokens = parseSelector(selector);
+    if (tokens.length === 1 && tokens[0].type === 'id') {
+        return getElementById(tokens[0].value as string);
+    }
     return queryChildSelector(element, tokens);
 }
 

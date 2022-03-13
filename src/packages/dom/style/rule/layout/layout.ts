@@ -25,6 +25,11 @@ export class LayoutBase {
         LayoutChangeManager.collectElement(this._element);
     }
     _reLayout () {
+        this._reLayoutSelf();
+    }
+
+
+    _reLayoutSelf () {
         const element = this._element;
         const parentLayout = element.parentElement?._layout;
 
@@ -221,7 +226,7 @@ export class Layout extends LayoutBase implements IElementLayout {
     _blockParentWidth = 0;
 
     // 重排子元素
-    _reLayout (index = 0) {
+    _reLayoutChildren (index = 0) {
         this._reset();
         const element = this._element;
         const nodes = element.childNodes;
@@ -230,18 +235,11 @@ export class Layout extends LayoutBase implements IElementLayout {
         for (let i = index; i < nodes.length; i++) {
             nodes[i]._layout._reLayout();
         }
+    }
 
+    _reLayout () {
+        this._reLayoutChildren();
         super._reLayout();
-
-        // const width = this.width;
-        // const height = this.height;
-        // if (!this._lastSize) {
-        //     this._lastSize = {width, height};
-        // } else {
-        //     if (this._lastSize.width !== width || this._lastSize.height !== height) {
-        //         this._element.parentElement?._layout._reLayout();
-        //     }
-        // }
     }
 
     _reset () {

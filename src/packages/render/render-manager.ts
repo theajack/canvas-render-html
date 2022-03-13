@@ -2,21 +2,19 @@ import {EElementTagName, ENodeType} from '@src/types/enum';
 import {IStyleChangeCollect, IStyleOptions, TStyleKey} from '@src/types/style';
 import {IJson} from '@src/types/util';
 import {Application} from 'pixi.js';
+import {getContext} from '../context/context';
 import {document} from '../dom/document';
+// import {document} from '../dom/document';
 import {Element} from '../dom/elements/element';
 import {Node} from '../dom/elements/node';
 import {isRelayoutStyle} from '../dom/style/style-util';
-import {triggerNextTickCalls} from './next-tick';
+import {clearNextTickCallbacks, triggerNextTickCalls} from './next-tick';
 
 export const StyleChangeManager = (() => {
 
     let StyleCollector: IJson<IStyleChangeCollect> = {};
     let empty = true;
-
-    const clear = () => {
-        StyleCollector = {};
-        empty = true;
-    };
+    
     return {
         // 通过style.xx = xx 触发
         // important 已被前置处理
@@ -70,7 +68,11 @@ export const StyleChangeManager = (() => {
         
                 node.style._renderStyles(styles);
             }
-            clear();
+            this.clear();
+        },
+        clear () {
+            StyleCollector = {};
+            empty = true;
         }
     };
 })();
@@ -101,8 +103,11 @@ export const SelectorChangeManager = (() => {
                 root._traverseSiblingFromCurrent((sibling) => {
                     applySelectorChangeToElement(sibling);
                 });
-                rootElement.clear();
+                this.clear();
             }
+        },
+        clear () {
+            rootElement.clear();
         }
     };
 })();
@@ -123,27 +128,40 @@ export const LayoutChangeManager = (() => {
             }
         },
         triggerChange () {
-            // rootElement.get()?.parentElement?._layout._reLayout();
             if (collector.length > 0) {
                 // todo 待优化性能 对比局部relayout
-                document.body._layout._reLayout();
-                console.log('triggerSelectorChange', collector);
-                collector = [];
-                rootElement.clear();
+                // rootElement.get()?.parentElement?._layout._reLayoutChildren();
+                document.body._layout._reLayoutChildren();
+                console.log('triggerLayoutChange', collector);
+                this.clear();
             }
+        },
+        clear () {
+            collector = [];
+            rootElement.clear();
         }
     };
 })();
 
-export function initRenderManager (app: Application) {
-    app.ticker.add(() => {
-        // 三个顺序不能颠倒
-        SelectorChangeManager.triggerChange();
-        StyleChangeManager.triggerChange();
-        LayoutChangeManager.triggerChange();
+function renderLoop () {
+    SelectorChangeManager.triggerChange();
+    StyleChangeManager.triggerChange();
+    LayoutChangeManager.triggerChange();
 
-        triggerNextTickCalls();
-    });
+    triggerNextTickCalls();
+}
+
+export function initRenderManager (app: Application) {
+    app.ticker.add(renderLoop);
+}
+
+export function clearRenderManager () {
+    getContext('application').ticker.remove(renderLoop);
+    SelectorChangeManager.clear();
+    StyleChangeManager.clear();
+    LayoutChangeManager.clear();
+
+    clearNextTickCallbacks();
 }
 
 function buildParentChooser () {
@@ -156,7 +174,7 @@ function buildParentChooser () {
                 rootParent = element;
             } else {
                 if (
-                    rootParent.tagName === EElementTagName.Body ||
+                    rootParent.__deep === 0 ||
                     rootParent.__id === element.__id
                 ) {
                     return;

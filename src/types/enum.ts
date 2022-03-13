@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:13:23
  * @LastEditors: tackchen
- * @LastEditTime: 2022-02-23 17:40:23
+ * @LastEditTime: 2022-03-13 18:09:31
  * @FilePath: /canvas-render-html/src/types/enum.ts
  * @Description: Coding something
  */
@@ -32,4 +32,11 @@ export enum EElementName {
     Script = 'script',
     Style = 'style',
     Body = 'body',
+}
+
+export enum ECompareResult {
+    LESS,
+    EVEN,
+    MORE,
+    UNKNOW,
 }

@@ -2,13 +2,14 @@
  * @Author: tackchen
  * @Date: 2022-02-22 22:22:04
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 17:12:57
+ * @LastEditTime: 2022-03-13 18:58:00
  * @FilePath: /canvas-render-html/src/packages/dom/attribute/attribute.ts
  * @Description: Coding something
  */
 import {IAttributeOptions, IAttributePair, TAttributeKey} from '@src/types/attribute';
 import {IJson} from '@src/types/util';
 import {Element} from '../elements/element';
+import {onAddIntoAttrIdMap, onRemoveFromAttrIdMap} from '../parser/id-map';
 
 export class AttributePair implements IAttributePair {
     private _name: TAttributeKey;
@@ -18,6 +19,14 @@ export class AttributePair implements IAttributePair {
     set value (v: string) {
         if (this._value === v) return;
         this._value = v;
+
+        if (this.name === 'id') {
+            if (this._value) {
+                onRemoveFromAttrIdMap(this._element, this._value);
+            }
+            onAddIntoAttrIdMap(this._element, v);
+        }
+
         if (this.name === 'class') {
             this._element.classList._initClassName();
         } else if (this.name === 'style') {
@@ -57,7 +66,17 @@ export class Attribute implements IAttributeOptions {
         return this._nameList.has(key);
     }
 
+    _markRemoveIdAttr () {
+        const id = this.id?.value;
+        if (id) {
+            onRemoveFromAttrIdMap(this._element, id);
+        }
+    }
+
     _removeAttribute (key: TAttributeKey) {
+        if (key === 'id') {
+            this._markRemoveIdAttr();
+        }
         (this[key] as any) = undefined;
         if (this._nameList.has(key)) {
             this._nameList.delete(key);
