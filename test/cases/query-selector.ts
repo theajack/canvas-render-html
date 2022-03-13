@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-01-08 15:32:27
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-13 21:25:16
+ * @LastEditTime: 2022-03-14 00:12:38
  * @FilePath: /canvas-render-html/test/cases/query-selector.ts
  * @Description: Coding something
  */
@@ -16,10 +16,7 @@ import {matchSelectorToken, parseSelector} from '@src/packages/dom/parser/select
 renderHtmlToCanvas({
     html: /* html*/`
     <div class='d00 c1 c2 c3'>
-        <div>
-        <div id='11' class="d1">11</div><div class='xx' style="color: #4f4">222</div>
-        </div>
-        <div class='d1' style='color: #0f0'>
+        <div class='d1'>
             <div class='d10'>d10</div>
             <div class=''></div>
             <div class='d11' id='id_d11'>d11</div>
@@ -39,11 +36,6 @@ renderHtmlToCanvas({
         <span name='aa'></span>
         <span name='bb'></span>
     </div>
-    `,
-    css: /* css*/`
-    .d00 .d1{
-        color: #f00
-    }
     `
 });
 

@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:44
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-13 19:18:05
+ * @LastEditTime: 2022-03-13 23:55:44
  * @FilePath: /canvas-render-html/src/packages/dom/elements/node.ts
  * @Description: Coding something
  */
@@ -62,6 +62,7 @@ export abstract class Node implements INode {
         this.parentElement = parent;
         this.__deep = parent.__deep + 1;
         this.__path = `${parent.__path}/${this.__id}`;
+        (this as any).__pathArray = undefined;
         onAddIntoIdMap(this);
     }
 

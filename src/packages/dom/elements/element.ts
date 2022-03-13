@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-13 18:58:19
+ * @LastEditTime: 2022-03-14 00:06:20
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
@@ -16,6 +16,7 @@ import {IJson} from '@src/types/util';
 import {Container, Sprite} from 'pixi.js';
 import {Attribute} from '../attribute/attribute';
 import {ClassList} from '../attribute/class-list';
+import {getElementByIdFromMap} from '../parser/id-map';
 import {parseHtml} from '../parser/parser';
 import {querySelector, querySelectorAll} from '../parser/query-selector';
 // import {parseHtml} from '../parser/parser';
@@ -280,6 +281,33 @@ export abstract class Element extends Node implements IElement {
             if (id === id2) return ECompareResult.LESS;
         }
         return ECompareResult.UNKNOW;
+    }
+
+    _findCommonParent (element: Element) {
+        if (this._isChild(element)) return this;
+        if (element._isChild(this)) return element;
+        this._initPathArray();
+        element._initPathArray();
+
+        const n = Math.min(this.__pathArray.length, element.__pathArray.length);
+
+        let lastPVId: number = 0;
+
+        for (let deep = 0; deep < n; deep++) {
+            const thisPVId = this.__pathArray[deep]; // thisPathValue
+            const nodePVId = element.__pathArray[deep]; //
+            if (thisPVId === nodePVId) {
+                lastPVId = thisPVId;
+                continue;
+            } else {
+                break;
+            }
+        }
+        return getElementByIdFromMap(lastPVId) as Element;
+    }
+
+    _isChild (node: Node) {
+        return node.__path.indexOf(this.__path + '/') === 0;
     }
 }
 

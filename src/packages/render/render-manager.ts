@@ -1,4 +1,4 @@
-import {EElementTagName, ENodeType} from '@src/types/enum';
+import {ENodeType} from '@src/types/enum';
 import {IStyleChangeCollect, IStyleOptions, TStyleKey} from '@src/types/style';
 import {IJson} from '@src/types/util';
 import {Application} from 'pixi.js';
@@ -173,30 +173,32 @@ function buildParentChooser () {
             if (!rootParent) {
                 rootParent = element;
             } else {
-                if (
-                    rootParent.__deep === 0 ||
-                    rootParent.__id === element.__id
-                ) {
-                    return;
-                }
+                // 使用 path 判断 提升效率
+                rootParent = rootParent._findCommonParent(element);
+                // if (
+                //     rootParent.__deep === 0 ||
+                //     rootParent.__id === element.__id
+                // ) {
+                //     return;
+                // }
         
-                let parent = rootParent.parentElement;
+                // let parent = rootParent.parentElement;
         
-                if (parent?.__id === element.parentElement?.__id) {
-                    // root 与 element是兄弟 则取共同的父元素
-                    rootParent = parent;
-                    return;
-                }
+                // if (parent?.__id === element.parentElement?.__id) {
+                //     // root 与 element是兄弟 则取共同的父元素
+                //     rootParent = parent;
+                //     return;
+                // }
         
-                while (true) {
-                    // 从当前root往上找 如果存在element 则将root设置为element
-                    if (!parent || parent.tagName === EElementTagName.Body) return;
-                    if (parent.__id === element.__id) {
-                        rootParent = element;
-                        return;
-                    }
-                    parent = parent.parentElement;
-                }
+                // while (true) {
+                //     // 从当前root往上找 如果存在element 则将root设置为element
+                //     if (!parent || parent.tagName === EElementTagName.Body) return;
+                //     if (parent.__id === element.__id) {
+                //         rootParent = element;
+                //         return;
+                //     }
+                //     parent = parent.parentElement;
+                // }
             }
         }
     };

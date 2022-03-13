@@ -11,34 +11,36 @@ WIN.doc = document;
 // <div class='a b'><span class=' 1'>d1 </span></div>
 // <div class='a d 2'><div class='d'>d2</div></div>
 const body = renderHtmlToCanvas({
-    html: /* html*/`
-    <span id=0>
-        <span id='1'>11</span><span id='2'>22</span>
-    </span>
-    <span id='3'>33</span>
-    <div id='4'>44</div>
-
+    html: /* html*/`<div class='d00 c1 c2 c3'>
+        <div>
+        <div id='11' class="d1">11</div><div class='xx' style="color: #4f4">222</div>
+        </div>
+        <div class='d1' style='color: #0f0'>
+            <div class='d10'>d10</div>
+            <div class=''></div>
+            <div class='d11' id='id_d11'>d11</div>
+            <div class='d12'>d12</div>
+        </div>
+        <div class='d2'>d2</div>
+        <div class='d3'>d3</div>
+        <div class='d4'>
+            <div class='d41' id='id_d11'>
+                <div class='d42'>d42</div>
+            </div>
+            <div class='d42'>>d42</div>
+        </div>
+        <div class='d42'>+d42</div>
+        <div class='c1 c2 c3 c4'></div>
+        <span name='aa'></span>
+        <span name='aa'></span>
+        <span name='bb'></span>
+    </div>
     `,
-    css: `#1{color: #fff}` // <span>s3</span>
-    // <span>s2</span>
-    // <div style='color: #f00;font-size: 18px' id='1' class=3>11111</div>
-    // <div style='color: #00f;font-size: 28px' id='2' class=3>2222</div>
-    // <div style='color: #00f;font-size: 28px' id='3' class=3>3333</div>
-/*
-    <div style='color: #00f;font-size: 28px' id='2' class=3>
-       2222
-    </div>
-    <div style='color: #00f;font-size: 28px' id='3' class=3>
-       3333
-    </div>
-    <div id='4'>
-       4444
-    </div>
-
-*/
-// div
-    // 222
-    // <span>333</span>
+    css: /* css*/`
+    .d00 .d1{
+        color: #f00
+    }
+    `
 });
 
 WIN.body = body;
