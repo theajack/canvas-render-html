@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-14 00:06:20
+ * @LastEditTime: 2022-03-15 10:53:52
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
@@ -16,7 +16,6 @@ import {IJson} from '@src/types/util';
 import {Container, Sprite} from 'pixi.js';
 import {Attribute} from '../attribute/attribute';
 import {ClassList} from '../attribute/class-list';
-import {getElementByIdFromMap} from '../parser/id-map';
 import {parseHtml} from '../parser/parser';
 import {querySelector, querySelectorAll} from '../parser/query-selector';
 // import {parseHtml} from '../parser/parser';
@@ -58,8 +57,8 @@ export abstract class Element extends Node implements IElement {
 
     _appendText (text: string) {
         const textNode = new TextNode();
-        textNode.textContent = text;
         this.appendChild(textNode);
+        textNode.textContent = text;
         textNode._onParseStart();
         textNode._onParseEnd();
         return textNode;
@@ -272,42 +271,16 @@ export abstract class Element extends Node implements IElement {
     }
 
     // 比较两个子元素（id）的先后顺序
-    _compareChildrenOrder (id1: number, id2: number): ECompareResult {
+    // id1 在前 返回 more
+    _compareChildrenOrder (id1: number, id2: number, reverse = false): ECompareResult {
         if (id1 === id2) return ECompareResult.EVEN;
         const nodes = this.childNodes;
         for (let i = 0; i < nodes.length; i++) {
             const id = nodes[i].__id;
-            if (id === id1) return ECompareResult.MORE;
-            if (id === id2) return ECompareResult.LESS;
+            if (id === id1) return reverse ? ECompareResult.LESS : ECompareResult.MORE;
+            if (id === id2) return reverse ? ECompareResult.MORE : ECompareResult.LESS;
         }
         return ECompareResult.UNKNOW;
-    }
-
-    _findCommonParent (element: Element) {
-        if (this._isChild(element)) return this;
-        if (element._isChild(this)) return element;
-        this._initPathArray();
-        element._initPathArray();
-
-        const n = Math.min(this.__pathArray.length, element.__pathArray.length);
-
-        let lastPVId: number = 0;
-
-        for (let deep = 0; deep < n; deep++) {
-            const thisPVId = this.__pathArray[deep]; // thisPathValue
-            const nodePVId = element.__pathArray[deep]; //
-            if (thisPVId === nodePVId) {
-                lastPVId = thisPVId;
-                continue;
-            } else {
-                break;
-            }
-        }
-        return getElementByIdFromMap(lastPVId) as Element;
-    }
-
-    _isChild (node: Node) {
-        return node.__path.indexOf(this.__path + '/') === 0;
     }
 }
 

@@ -2,7 +2,7 @@ import {StyleChangeManager} from '@src/packages/render/render-manager';
 import {IStyleClass, IStyleOptions, TStyleDisplay, TStyleKey, TStylePosition} from '@src/types/style';
 import {TextNode} from '../elements/text-node';
 import {getDefaultStyle} from './default-style';
-import {INHERIT_STYLES, TextStyleNameMap, TEXT_STYLES} from './style-util';
+import {INHERIT_STYLES, isTextRelayoutStyle, TextStyleNameMap, TEXT_STYLES} from './style-util';
 
 export class TextNodeStyle implements IStyleClass {
     _element: TextNode;
@@ -30,7 +30,14 @@ export class TextNodeStyle implements IStyleClass {
         if (key) { // 直接可以将样式映射成pixi text的样式
             const value = this._getStyle(name);
             if (value) {
-                this._applySingleStyleToPixi(key, value);
+                const call = () => {
+                    this._applySingleStyleToPixi(key, value);
+                };
+                if (isTextRelayoutStyle(name)) {
+                    this._element._layout._collect(call);
+                } else {
+                    call();
+                }
             }
         }
 

@@ -2,13 +2,14 @@
  * @Author: tackchen
  * @Date: 2022-02-20 19:36:59
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 22:10:16
+ * @LastEditTime: 2022-03-19 19:53:33
  * @FilePath: /canvas-render-html/src/types/style.d.ts
  * @Description: Coding something
  */
 
 import {IParselToken} from 'parsel-js';
 import {IElement, INode} from './dom';
+import {ISize} from './util';
 
 export type TStyleCommon = 'inherit' | 'initial' | 'unset' | string;
 
@@ -25,8 +26,12 @@ export interface ILayout {
     width: number;
     left: number; // 偏移量
     top: number;
-    _collect(): void;
+    _layoutChange: boolean;
+    _inReLayouting: boolean;
+    // _inReLayouting: boolean;
+    _collect(call?: Function): void;
     _reLayout(index?: number): void;
+    _reLayoutSelf(): void;
 }
 
 export interface IElementLayout extends ILayout {
@@ -36,13 +41,9 @@ export interface IElementLayout extends ILayout {
     readonly offsetWidth: number;
 }
 
-export interface IBoundary {
-    startX: number; // 起始点
-    startY: number;
-    endX: number; // 最后一个元素右下角
-    endY: number;
-    cornerX: number; // 最后一个元素右上角
-    cornerY: number;
+export interface IBoundary extends ISize {
+    _element: INode;
+    _extend(block: ISize): void;
 }
 
 export interface IStyleBase {

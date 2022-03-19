@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 23:57:32
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-06 20:01:27
+ * @LastEditTime: 2022-03-14 23:16:55
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-util.ts
  * @Description: Coding something
  */
@@ -55,19 +55,28 @@ export const TextStyleNameMap: {
     fontSize: 'fontSize',
 };
 
-export const TEXT_STYLES: TStyleKey[] = ['color', 'fontSize'];
+export const TEXT_RELAYOUT_STYLES: TStyleKey[] = ['fontSize'];
 
-export const INHERIT_STYLES: TStyleKey[] = ['color', 'fontSize'];
+export const TEXT_STYLES: TStyleKey[] = ['color', ...TEXT_RELAYOUT_STYLES];
+
+export const INHERIT_STYLES: TStyleKey[] = [...TEXT_STYLES];
+// 会引起重排的样式
+export const RELAYOUT_STYLES: TStyleKey[] = ['display', 'position', ...TEXT_RELAYOUT_STYLES];
 
 export function isInheritStyle (name: TStyleKey) {
     return INHERIT_STYLES.includes(name);
 }
 
-// 会引起重排的样式
-export const RELAYOUT_STYLES: TStyleKey[] = ['fontSize', 'display', 'position'];
-
 export function isRelayoutStyle (name: TStyleKey) {
     return RELAYOUT_STYLES.includes(name);
+}
+
+export function isTextStyle (name: TStyleKey) {
+    return TEXT_STYLES.includes(name);
+}
+
+export function isTextRelayoutStyle (name: TStyleKey) {
+    return TEXT_RELAYOUT_STYLES.includes(name);
 }
 
 

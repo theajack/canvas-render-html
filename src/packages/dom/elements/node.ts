@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:44
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-13 23:55:44
+ * @LastEditTime: 2022-03-19 18:56:28
  * @FilePath: /canvas-render-html/src/packages/dom/elements/node.ts
  * @Description: Coding something
  */
@@ -109,7 +109,7 @@ export abstract class Node implements INode {
     }
 
     // ! 算法： 深度优先中比较顺序
-    _compareOrderInDeepFirst (node: Node): ECompareResult {
+    _compareOrderInDeepFirst (node: Node, reverseSib = false): ECompareResult {
         if (node.__id === this.__id) {return ECompareResult.EVEN;};
 
         this._initPathArray();
@@ -138,9 +138,36 @@ export abstract class Node implements INode {
 
             if (!parent) return ECompareResult.UNKNOW;
 
-            return (parent as Element)._compareChildrenOrder(thisPVId, nodePVId);
+            return (parent as Element)._compareChildrenOrder(thisPVId, nodePVId, reverseSib);
         }
 
         return ECompareResult.EVEN;
+    }
+
+    _findCommonParent (element: Node) {
+        if (this._isChild(element)) return this;
+        if (element._isChild(this)) return element;
+        this._initPathArray();
+        element._initPathArray();
+
+        const n = Math.min(this.__pathArray.length, element.__pathArray.length);
+
+        let lastPVId: number = 0;
+
+        for (let deep = 0; deep < n; deep++) {
+            const thisPVId = this.__pathArray[deep]; // thisPathValue
+            const nodePVId = element.__pathArray[deep]; //
+            if (thisPVId === nodePVId) {
+                lastPVId = thisPVId;
+                continue;
+            } else {
+                break;
+            }
+        }
+        return getElementByIdFromMap(lastPVId) as Node;
+    }
+
+    _isChild (node: Node) {
+        return node.__path.indexOf(this.__path + '/') === 0;
     }
 }

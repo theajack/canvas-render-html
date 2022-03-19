@@ -1,13 +1,12 @@
-import {ENodeType} from '@src/types/enum';
+import {ECompareResult, ENodeType} from '@src/types/enum';
 import {IStyleChangeCollect, IStyleOptions, TStyleKey} from '@src/types/style';
 import {IJson} from '@src/types/util';
 import {Application} from 'pixi.js';
 import {getContext} from '../context/context';
-import {document} from '../dom/document';
 // import {document} from '../dom/document';
 import {Element} from '../dom/elements/element';
 import {Node} from '../dom/elements/node';
-import {isRelayoutStyle} from '../dom/style/style-util';
+// import {isRelayoutStyle, isTextRelayoutStyle} from '../dom/style/style-util';
 import {clearNextTickCallbacks, triggerNextTickCalls} from './next-tick';
 
 export const StyleChangeManager = (() => {
@@ -34,9 +33,14 @@ export const StyleChangeManager = (() => {
             } else {
                 item.styles[name] = value as any;
             }
-            if (isRelayoutStyle(name as TStyleKey)) {
-                LayoutChangeManager.collectElement(node);
-            }
+            // // ! 对于文本layout样式 非textNode不需要进行
+            // const isTextLayout = isTextRelayoutStyle(name);
+            // if (
+            //     (isTextLayout && node.nodeType === ENodeType.Text)
+            //     || (!isTextLayout && isRelayoutStyle(name))
+            // ) {
+            //     LayoutChangeManager.collectElement(node);
+            // }
         },
         // 通过style = xxx 触发
         // important 已被前置处理
@@ -53,16 +57,16 @@ export const StyleChangeManager = (() => {
                 Object.assign(item.styles, styles);
             }
         
-            for (const key in styles) { // 提取可能造成重排的样式
-                if (isRelayoutStyle(key as TStyleKey)) {
-                    LayoutChangeManager.collectElement(node);
-                }
-            }
+            // for (const key in styles) { // 提取可能造成重排的样式
+            //     if (isRelayoutStyle(key as TStyleKey)) {
+            //         LayoutChangeManager.collectElement(node);
+            //     }
+            // }
         },
         triggerChange () {
-            if (Object.keys(StyleCollector).length > 0) {
-                console.log(StyleCollector);
-            }
+            // if (Object.keys(StyleCollector).length > 0) {
+            //     console.log(StyleCollector);
+            // }
             for (const k in StyleCollector) {
                 const {node, styles} = StyleCollector[k];
         
@@ -80,7 +84,7 @@ export const StyleChangeManager = (() => {
 // 处理选择器变化 attr、tagName 改变
 // 选择器变化 只需要收集最大的父元素即可
 export const SelectorChangeManager = (() => {
-    const rootElement = buildParentChooser();
+    const rootElement = buildParentChooser<Element>();
 
     function applySelectorChangeToElement (element: Node) {
         element.style._initInheritStyles();
@@ -99,7 +103,8 @@ export const SelectorChangeManager = (() => {
         triggerChange () {
             const root = rootElement.get();
             if (root) {
-                console.log('triggerSelectorChange', root);
+                // console.log('triggerSelectorChange', root);
+                // todo 待优化性能 比对过滤不需要遍历的节点
                 root._traverseSiblingFromCurrent((sibling) => {
                     applySelectorChangeToElement(sibling);
                 });
@@ -112,38 +117,92 @@ export const SelectorChangeManager = (() => {
     };
 })();
 
-
-export const LayoutChangeManager = (() => {
-    const rootElement = buildParentChooser();
+function buildNodeOrderCollector () {
     let collector: Node[] = [];
 
     return {
-        collectElement (node: Node) {
+        collect (node: Node) {
             if (!collector.includes(node)) {
-                collector.push(node);
-                // textNode的style肯定是来自继承自父元素 所以可以忽略textNode的change
-                if (node.nodeType === ENodeType.Element) {
-                    rootElement.add(node as Element);
+                for (let i = 0; i < collector.length; i++) {
+                    const itemNode = collector[i];
+                    const value = node._compareOrderInDeepFirst(itemNode, true);
+                    if (value === ECompareResult.LESS) {
+                        collector.splice(i, 0, node);
+                        return;
+                    }
                 }
-            }
-        },
-        triggerChange () {
-            if (collector.length > 0) {
-                // todo 待优化性能 对比局部relayout
-                // rootElement.get()?.parentElement?._layout._reLayoutChildren();
-                document.body._layout._reLayoutChildren();
-                console.log('triggerLayoutChange', collector);
-                this.clear();
+                collector.push(node);
             }
         },
         clear () {
             collector = [];
-            rootElement.clear();
+        },
+        get () {
+            return collector;
+        }
+    };
+}
+
+export const LayoutChangeManager = (() => {
+    const changeCollector = buildNodeOrderCollector();
+
+    const needReLayoutChildrenCollector = buildNodeOrderCollector();
+
+    const relayoutList: Set<number> = new Set();
+
+    return {
+        markLayout (id: number) {
+            relayoutList.add(id);
+        },
+        collectElement (node: Node) {
+            changeCollector.collect(node);
+        },
+        collectNeedReLoyoutChildrenElement (node: Node) {
+            needReLayoutChildrenCollector.collect(node);
+        },
+        triggerChange () {
+            const changeList = changeCollector.get();
+            if (changeList.length > 0) {
+                console.log('triggerLayoutChange', changeList);
+                // todo 待优化性能 对比局部relayout
+                // rootElement.get()?.parentElement?._layout._reLayoutChildren();
+                // document.body._layout._reLayoutChildren();
+
+                for (let i = 0, length = changeList.length; i < length; i++) {
+                    const node = changeList[i];
+                    console.log('traverse', node.__id);
+                    // const layout = node._layout;
+                    // debugger;
+                    if (!relayoutList.has(node.__id)) {
+                        node.parentElement?._layout._reLayout();
+                    }
+                }
+
+
+                const needReLayoutChildrenList = needReLayoutChildrenCollector.get();
+
+                if (needReLayoutChildrenList.length > 0) {
+                    console.log('needReLayoutChildrenList=', needReLayoutChildrenList);
+                    for (let i = 0, length = needReLayoutChildrenList.length; i < length; i++) {
+                        const node = needReLayoutChildrenList[i] as Element;
+                        node._layout._reLayoutChildren2();
+                    }
+                }
+                this.clear();
+                
+                console.log((window as any).elementIdMap);
+            }
+        },
+        clear () {
+            changeCollector.clear();
+            needReLayoutChildrenCollector.clear();
+            relayoutList.clear();
         }
     };
 })();
 
 function renderLoop () {
+    
     SelectorChangeManager.triggerChange();
     StyleChangeManager.triggerChange();
     LayoutChangeManager.triggerChange();
@@ -164,17 +223,17 @@ export function clearRenderManager () {
     clearNextTickCallbacks();
 }
 
-function buildParentChooser () {
-    let rootParent: Element | null = null;
+function buildParentChooser<T extends Node = Node> () {
+    let rootParent: T | null = null;
     return {
         get () {return rootParent;},
         clear () {return rootParent = null;},
-        add (element: Element) {
+        add (node: T) {
             if (!rootParent) {
-                rootParent = element;
+                rootParent = node;
             } else {
                 // 使用 path 判断 提升效率
-                rootParent = rootParent._findCommonParent(element);
+                rootParent = rootParent._findCommonParent(node) as T;
                 // if (
                 //     rootParent.__deep === 0 ||
                 //     rootParent.__id === element.__id

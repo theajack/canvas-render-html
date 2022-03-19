@@ -11,50 +11,95 @@ import {Node} from '@src/packages/dom/elements/node';
 import {TextNode} from '@src/packages/dom/elements/text-node';
 import {LayoutChangeManager} from '@src/packages/render/render-manager';
 import {IElementLayout, ILayout} from '@src/types/style';
-import {IPosition, ISize} from '@src/types/util';
+import {IPosition} from '@src/types/util';
+import {Text} from 'pixi.js';
 // import {ENodeType} from '@src/types/enum';
 import {Element} from '../../../elements/element';
 import {countStyleLength} from '../../style-util';
-
-export class LayoutBase {
+// const i = 0;
+export abstract class LayoutBase {
     protected _element: Node;
+    _inReLayouting = false;
+    get width () {
+        const container = this._element._container as Text;
+        return (container.text) ? container.width : 0;
+    }
+    get height () {
+        const container = this._element._container as Text;
+        return (container.text) ? container.height : 0;
+    }
+
+    _lastWidth = 0;
+    _lastHeight = 0;
+    _initLastSize () {
+        this._lastWidth = this.width;
+        this._lastHeight = this.height;
+    }
+    
+    _layoutChange = false;
+    _layoutChangesFuncs: Function[] = [];
     constructor (element: Node) {
         this._element = element;
     }
-    _collect () {
+    _triggerLayoutChangeFuncs () {
+        if (this._layoutChangesFuncs.length === 0) {
+            return;
+        }
+        this._layoutChangesFuncs.forEach(fn => {fn();});
+        this._layoutChangesFuncs = [];
+    }
+    _collect (call?: Function) {
+        // todo 待优化 合并同样的样式
+        if (call) this._layoutChangesFuncs.push(call);
+        if (!this._layoutChange) {this._layoutChange = true;}
         LayoutChangeManager.collectElement(this._element);
     }
-    _reLayout () {
-        this._reLayoutSelf();
+
+    _countSizeChange () {
+        return (this._lastWidth !== this.width || this._lastHeight !== this.height);
     }
 
+    _reLayout () {
+        this._markLayouted();
+        this._initLastSize();
+        const change = this._reLayoutSelf();
 
+        this.log('reLayout', change.posChange || change.sizeChange, change);
+        return change;
+    }
+    _markLayouted () {
+        LayoutChangeManager.markLayout(this._element.__id);
+    }
     _reLayoutSelf () {
+        this.log('_reLayoutSelf');
+        this._triggerLayoutChangeFuncs();
+        const sizeChange = this._countSizeChange();
         const element = this._element;
         const parentLayout = element.parentElement?._layout;
-
+        let posChange = false;
         if (parentLayout) {
             const pos = parentLayout._countNodeLayout(element);
             if (pos) {
-                element._container.x = pos.x;
-                element._container.y = pos.y;
+                if (element._container.x !== pos.x) {
+                    element._container.x = pos.x;
+                    posChange = true;
+                }
+                if (element._container.y !== pos.y) {
+                    element._container.y = pos.y;
+                    posChange = true;
+                }
             }
         }
+        return {sizeChange, posChange};
+    }
+
+    log (...data: any[]) {
+        console.info('[layout]', this._element.__id, ...data);
     }
 }
 
 export class TextLayout extends LayoutBase implements ILayout {
     protected _element: TextNode;
-    get width () {
-        if (!this._element.textContent)
-            return 0;
-        return this._element._container.width;
-    }
-    get height () {
-        if (!this._element.textContent)
-            return 0;
-        return this._element._container.height;
-    }
     get x () {return this._element._container.x;}
     get y () {return this._element._container.y;}
     left = 0;
@@ -64,8 +109,6 @@ export class TextLayout extends LayoutBase implements ILayout {
 // element自身的实际layout尺寸
 export class Layout extends LayoutBase implements IElementLayout {
     
-    _lastSize: ISize | null = null;
-
     protected _element: Element;
 
     get width (): number {
@@ -158,6 +201,7 @@ export class Layout extends LayoutBase implements IElementLayout {
     layoutX = 0;
     layoutY = 0;
     layoutHeight = 0;
+
     
     _countNodeLayout (node: Node) {
         const display = node.style.display;
@@ -182,7 +226,7 @@ export class Layout extends LayoutBase implements IElementLayout {
             const {width, height, y} = layout;
 
             const x = this.layoutX + width;
-            if (x > (this._element.parentElement?._layout._blockParentWidth as number)) {
+            if (x > (this._element.parentElement?._layout._blockWidth as number)) {
                 pos.x = 0;
                 pos.y = this.layoutHeight;
                 this.layoutX = width;
@@ -204,11 +248,17 @@ export class Layout extends LayoutBase implements IElementLayout {
         let parent: Element | null = this._element;
         do {
             parent = parent.parentElement;
-            if (!parent)
-                return getScreenSize().width;
+            if (!parent) return getScreenSize().width;
         } while (parent.style.display === 'inline');
 
         return parent._layout.width;
+    }
+
+    private _countBlockWidth () {
+        if (this._element.style.display === 'block') {
+            return this._element._layout.width;
+        }
+        return this._countBlockParentWidth();
     }
 
     private _countBlockParentHeight (): number {
@@ -223,109 +273,62 @@ export class Layout extends LayoutBase implements IElementLayout {
         return parent._layout.height;
     }
 
-    _blockParentWidth = 0;
+    _blockWidth = 0;
+
+
+    _reLayout () {
+        this.log('reLayout');
+        if (this._inReLayouting) {
+            this.log('---------', false);
+            return {sizeChange: false, posChange: false};
+        }
+        this._inReLayouting = true;
+        this._markLayouted();
+        this._initLastSize();
+        LayoutChangeManager.collectNeedReLoyoutChildrenElement(this._element);
+        // this._reLayoutChildren();
+        const change = this._reLayoutSelf();
+        this.log('---------', change.sizeChange || change.posChange, change);
+        if (change.posChange || change.sizeChange) {
+            this._element.parentElement?._layout._reLayout();
+        }
+        this._inReLayouting = false;
+        return change;
+    }
 
     // 重排子元素
     _reLayoutChildren (index = 0) {
+        // todo 待优化 _reset 支持index 优化性能
         this._reset();
         const element = this._element;
         const nodes = element.childNodes;
-        this._blockParentWidth = this._countBlockParentWidth();
+        this._blockWidth = this._countBlockWidth();
 
         for (let i = index; i < nodes.length; i++) {
-            nodes[i]._layout._reLayout();
+            const layout = nodes[i]._layout;
+            // layout._reLayout();
+            if (!layout._inReLayouting) {
+                layout._reLayout();
+            } else {
+                layout._reLayoutSelf();
+            }
         }
     }
+    _reLayoutChildren2 (index = 0) {
+        this._reset();
+        const element = this._element;
+        const nodes = element.childNodes;
+        this._blockWidth = this._countBlockWidth();
 
-    _reLayout () {
-        this._reLayoutChildren();
-        super._reLayout();
+        for (let i = index; i < nodes.length; i++) {
+            const layout = nodes[i]._layout;
+            layout._reLayoutSelf();
+        }
     }
 
     _reset () {
         this.layoutX = 0;
         this.layoutY = 0;
         this.layoutHeight = 0;
-    }
-
-    // 从 index个元素开始往后layout
-    // _reLayout (index: number, reLayoutParent = true) {
-    //     debugger;
-    //     // console.warn('layout', this._element.tagName, this._element.attributes.id, index);
-    //     const nodes = this._element.childNodes;
-    //     // if (this._element.tagName === 'BODY' && nodes[index].nodeType === ENodeType.Element) {
-    //     //     debugger;
-    //     // }
-    //     const layout = this._element._layout; // element自身的实际layout尺寸
-    //     let width, height: number = 0;
-    //     if (reLayoutParent) {
-    //         width = layout.width;
-    //         height = layout.height;
-    //     }
-    //     for (let i = index; i < this._element.childNodes.length; i++) {
-    //         const node = nodes[index];
-    //         const {display, position} = node.style;
-    //         const nodeLayout = node._layout;
-    //         let x = 0, y = 0;
-    //         if (position === 'fixed') {
-    //             const pos = node._container.getGlobalPosition();
-    //             x = nodeLayout.top - pos.x;
-    //             y = nodeLayout.left - pos.y;
-    //             node._container.x = x;
-    //             node._container.y = y;
-    //         } else if (position === 'absolute') {
-    //             x = nodeLayout.top;
-    //             y = nodeLayout.left;
-    //             node._container.x = x;
-    //             node._container.y = y;
-    //         } else {
-    //             if (i > 0) { // 第一个节点x y 直接为0
-    //                 const parentWidth = layout.blockParentWidth;
-    //                 // if ((node as any)?.attributes?.id === '3') {
-    //                 //     debugger;
-    //                 // }
-    //                 if (display === 'block') {
-    //                     x = boundary.startX;
-    //                     y = boundary.endY;
-    //                 } else if (display === 'inline-block') {
-    //                     if (parentWidth - boundary.cornerX >= nodeLayout.width) {
-    //                         x = boundary.cornerX;
-    //                         y = boundary.cornerY;
-    //                     } else {
-    //                         x = boundary.startX;
-    //                         y = boundary.endY;
-    //                     }
-    //                 } else if (display === 'inline') {
-    //                     // todo 暂时和inline-block一样处理
-    //                     if (parentWidth - boundary.cornerX >= nodeLayout.width) {
-    //                         x = boundary.cornerX;
-    //                         y = boundary.cornerY;
-    //                     } else {
-    //                         x = boundary.startX;
-    //                         y = boundary.endY;
-    //                     }
-    //                 }
-    //             }
-    //             node._container.x = x;
-    //             node._container.y = y;
-    //             // console.log((node as any)?.attribute?.id);
-    //             boundary.extendBoundary(node);
-    //         }
-    //         // console.log(boundary);
-    //     }
-    //     if (reLayoutParent && (layout.width !== width || layout.height !== height)) {
-    //         // debugger;
-    //         // console.warn('11', this._element.id, this._element.tagName);
-    //         // debugger;
-    //         // this._reLayoutParent();
-    //     }
-
-    //     // console.log(boundary);
-
-
-    // }
-    
-    _collect () {
-        LayoutChangeManager.collectElement(this._element);
     }
 }

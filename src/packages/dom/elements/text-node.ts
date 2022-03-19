@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-13 11:33:38
+ * @LastEditTime: 2022-03-15 00:14:22
  * @FilePath: /canvas-render-html/src/packages/dom/elements/text-node.ts
  * @Description: Coding something
  */
@@ -38,8 +38,10 @@ export class TextNode extends Node {
         // v = v.replace(/\n/g, '').trim();
         if (v === this._textContent) return;
         this._textContent = v;
-        this._container.text = v;
-        this._layout._collect();
+        this._layout._collect(() => {
+            // debugger;
+            this._container.text = v;
+        });
     }
 
     _onParseStart () {
