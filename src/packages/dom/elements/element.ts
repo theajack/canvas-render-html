@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-15 10:53:52
+ * @LastEditTime: 2022-03-19 21:38:51
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
@@ -271,14 +271,14 @@ export abstract class Element extends Node implements IElement {
     }
 
     // 比较两个子元素（id）的先后顺序
-    // id1 在前 返回 more
-    _compareChildrenOrder (id1: number, id2: number, reverse = false): ECompareResult {
+    // reverse = false时 id1 在前 返回 more
+    _compareChildrenOrder (id1: number, id2: number): ECompareResult {
         if (id1 === id2) return ECompareResult.EVEN;
         const nodes = this.childNodes;
         for (let i = 0; i < nodes.length; i++) {
             const id = nodes[i].__id;
-            if (id === id1) return reverse ? ECompareResult.LESS : ECompareResult.MORE;
-            if (id === id2) return reverse ? ECompareResult.MORE : ECompareResult.LESS;
+            if (id === id1) return ECompareResult.MORE;
+            if (id === id2) return ECompareResult.LESS;
         }
         return ECompareResult.UNKNOW;
     }

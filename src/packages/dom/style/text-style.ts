@@ -30,13 +30,9 @@ export class TextNodeStyle implements IStyleClass {
         if (key) { // 直接可以将样式映射成pixi text的样式
             const value = this._getStyle(name);
             if (value) {
-                const call = () => {
-                    this._applySingleStyleToPixi(key, value);
-                };
+                this._applySingleStyleToPixi(key, value);
                 if (isTextRelayoutStyle(name)) {
-                    this._element._layout._collect(call);
-                } else {
-                    call();
+                    this._element._layout._checkParentLayoutChange();
                 }
             }
         }

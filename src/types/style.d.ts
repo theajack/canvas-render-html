@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 19:36:59
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-19 19:53:33
+ * @LastEditTime: 2022-03-19 22:09:42
  * @FilePath: /canvas-render-html/src/types/style.d.ts
  * @Description: Coding something
  */
@@ -28,10 +28,8 @@ export interface ILayout {
     top: number;
     _layoutChange: boolean;
     _inReLayouting: boolean;
-    // _inReLayouting: boolean;
-    _collect(call?: Function): void;
-    _reLayout(index?: number): void;
     _reLayoutSelf(): void;
+    _checkParentLayoutChange(): void;
 }
 
 export interface IElementLayout extends ILayout {

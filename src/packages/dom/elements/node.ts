@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:44
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-19 18:56:28
+ * @LastEditTime: 2022-03-19 21:39:04
  * @FilePath: /canvas-render-html/src/packages/dom/elements/node.ts
  * @Description: Coding something
  */
@@ -109,7 +109,10 @@ export abstract class Node implements INode {
     }
 
     // ! 算法： 深度优先中比较顺序
-    _compareOrderInDeepFirst (node: Node, reverseSib = false): ECompareResult {
+    /*
+    当this与node时兄弟节点时, this在前，node在后 返回 more
+    */
+    _compareOrderInDeepFirst (node: Node): ECompareResult {
         if (node.__id === this.__id) {return ECompareResult.EVEN;};
 
         this._initPathArray();
@@ -138,7 +141,7 @@ export abstract class Node implements INode {
 
             if (!parent) return ECompareResult.UNKNOW;
 
-            return (parent as Element)._compareChildrenOrder(thisPVId, nodePVId, reverseSib);
+            return (parent as Element)._compareChildrenOrder(thisPVId, nodePVId);
         }
 
         return ECompareResult.EVEN;

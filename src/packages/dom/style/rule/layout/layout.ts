@@ -41,39 +41,25 @@ export abstract class LayoutBase {
     constructor (element: Node) {
         this._element = element;
     }
-    _triggerLayoutChangeFuncs () {
-        if (this._layoutChangesFuncs.length === 0) {
-            return;
+
+    _checkParentLayoutChange () {
+        const parent = this._element.parentElement;
+        if (!parent) return;
+        const parentLayout = parent._layout;
+
+        const {width, height} = parentLayout;
+
+        if (parentLayout._lastHeight !== height || parentLayout._lastWidth !== width) {
+            parentLayout._lastHeight = height;
+            parentLayout._lastWidth = width;
+            parentLayout._checkParentLayoutChange();
+
+            LayoutChangeManager.collectElement(parent);
         }
-        this._layoutChangesFuncs.forEach(fn => {fn();});
-        this._layoutChangesFuncs = [];
-    }
-    _collect (call?: Function) {
-        // todo 待优化 合并同样的样式
-        if (call) this._layoutChangesFuncs.push(call);
-        if (!this._layoutChange) {this._layoutChange = true;}
-        LayoutChangeManager.collectElement(this._element);
     }
 
-    _countSizeChange () {
-        return (this._lastWidth !== this.width || this._lastHeight !== this.height);
-    }
-
-    _reLayout () {
-        this._markLayouted();
-        this._initLastSize();
-        const change = this._reLayoutSelf();
-
-        this.log('reLayout', change.posChange || change.sizeChange, change);
-        return change;
-    }
-    _markLayouted () {
-        LayoutChangeManager.markLayout(this._element.__id);
-    }
     _reLayoutSelf () {
         this.log('_reLayoutSelf');
-        this._triggerLayoutChangeFuncs();
-        const sizeChange = this._countSizeChange();
         const element = this._element;
         const parentLayout = element.parentElement?._layout;
         let posChange = false;
@@ -90,7 +76,7 @@ export abstract class LayoutBase {
                 }
             }
         }
-        return {sizeChange, posChange};
+        return posChange;
     }
 
     log (...data: any[]) {
@@ -239,7 +225,6 @@ export class Layout extends LayoutBase implements IElementLayout {
                     this.layoutHeight = targetHeight;
                 }
             }
-
         }
         return pos;
     }
@@ -275,52 +260,14 @@ export class Layout extends LayoutBase implements IElementLayout {
 
     _blockWidth = 0;
 
-
-    _reLayout () {
-        this.log('reLayout');
-        if (this._inReLayouting) {
-            this.log('---------', false);
-            return {sizeChange: false, posChange: false};
-        }
-        this._inReLayouting = true;
-        this._markLayouted();
-        this._initLastSize();
-        LayoutChangeManager.collectNeedReLoyoutChildrenElement(this._element);
-        // this._reLayoutChildren();
-        const change = this._reLayoutSelf();
-        this.log('---------', change.sizeChange || change.posChange, change);
-        if (change.posChange || change.sizeChange) {
-            this._element.parentElement?._layout._reLayout();
-        }
-        this._inReLayouting = false;
-        return change;
-    }
-
-    // 重排子元素
-    _reLayoutChildren (index = 0) {
-        // todo 待优化 _reset 支持index 优化性能
+    // todo 待优化 从指定位置开始
+    _reLayoutChildren () {
         this._reset();
         const element = this._element;
         const nodes = element.childNodes;
         this._blockWidth = this._countBlockWidth();
 
-        for (let i = index; i < nodes.length; i++) {
-            const layout = nodes[i]._layout;
-            // layout._reLayout();
-            if (!layout._inReLayouting) {
-                layout._reLayout();
-            } else {
-                layout._reLayoutSelf();
-            }
-        }
-    }
-    _reLayoutChildren2 (index = 0) {
-        this._reset();
-        const element = this._element;
-        const nodes = element.childNodes;
-        this._blockWidth = this._countBlockWidth();
-
-        for (let i = index; i < nodes.length; i++) {
+        for (let i = 0; i < nodes.length; i++) {
             const layout = nodes[i]._layout;
             layout._reLayoutSelf();
         }

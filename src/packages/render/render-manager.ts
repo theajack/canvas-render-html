@@ -117,21 +117,43 @@ export const SelectorChangeManager = (() => {
     };
 })();
 
-function buildNodeOrderCollector () {
-    let collector: Node[] = [];
+
+function buildElementDeepOrderCollector () {
+    let collector: Element[] = [];
 
     return {
-        collect (node: Node) {
-            if (!collector.includes(node)) {
-                for (let i = 0; i < collector.length; i++) {
-                    const itemNode = collector[i];
-                    const value = node._compareOrderInDeepFirst(itemNode, true);
-                    if (value === ECompareResult.LESS) {
-                        collector.splice(i, 0, node);
-                        return;
+        collect (element: Element) {
+            if (!collector.includes(element)) {
+                const parent = element.parentElement;
+                const deep = element.__deep;
+                if (parent && deep > 0) {
+                    for (let i = 0; i < collector.length; i++) {
+                        const current = collector[i];
+    
+                        if (deep < current.__deep) continue;
+    
+                        if (deep > current.__deep) {
+                            collector.splice(i, 0, element);
+                            return;
+                        }
+    
+                        if (parent !== current.parentElement) {
+                            continue;
+                        }
+    
+                        const compareResult = parent._compareChildrenOrder(element.__id, current.__id);
+                        if (compareResult === ECompareResult.LESS) {
+                            continue;
+                        } else if (compareResult === ECompareResult.MORE) {
+                            collector.splice(i, 0, element);
+                            return;
+                        } else {
+                            throw new Error('_compareChildrenOrder error');
+                        }
+    
                     }
                 }
-                collector.push(node);
+                collector.push(element);
             }
         },
         clear () {
@@ -144,49 +166,22 @@ function buildNodeOrderCollector () {
 }
 
 export const LayoutChangeManager = (() => {
-    const changeCollector = buildNodeOrderCollector();
-
-    const needReLayoutChildrenCollector = buildNodeOrderCollector();
-
-    const relayoutList: Set<number> = new Set();
+    const collector = buildElementDeepOrderCollector();
 
     return {
-        markLayout (id: number) {
-            relayoutList.add(id);
-        },
-        collectElement (node: Node) {
-            changeCollector.collect(node);
-        },
-        collectNeedReLoyoutChildrenElement (node: Node) {
-            needReLayoutChildrenCollector.collect(node);
+        collectElement (node: Element) {
+            collector.collect(node);
         },
         triggerChange () {
-            const changeList = changeCollector.get();
-            if (changeList.length > 0) {
-                console.log('triggerLayoutChange', changeList);
-                // todo 待优化性能 对比局部relayout
-                // rootElement.get()?.parentElement?._layout._reLayoutChildren();
-                // document.body._layout._reLayoutChildren();
+            const list = collector.get();
+            if (list.length > 0) {
+                console.log('triggerLayoutChange', list);
 
-                for (let i = 0, length = changeList.length; i < length; i++) {
-                    const node = changeList[i];
-                    console.log('traverse', node.__id);
-                    // const layout = node._layout;
-                    // debugger;
-                    if (!relayoutList.has(node.__id)) {
-                        node.parentElement?._layout._reLayout();
-                    }
-                }
-
-
-                const needReLayoutChildrenList = needReLayoutChildrenCollector.get();
-
-                if (needReLayoutChildrenList.length > 0) {
-                    console.log('needReLayoutChildrenList=', needReLayoutChildrenList);
-                    for (let i = 0, length = needReLayoutChildrenList.length; i < length; i++) {
-                        const node = needReLayoutChildrenList[i] as Element;
-                        node._layout._reLayoutChildren2();
-                    }
+                for (let i = 0, length = list.length; i < length; i++) {
+                    const element = list[i];
+                    console.log('traverse', element.__id);
+                    // todo 增加index优化性能
+                    element._layout._reLayoutChildren();
                 }
                 this.clear();
                 
@@ -194,9 +189,7 @@ export const LayoutChangeManager = (() => {
             }
         },
         clear () {
-            changeCollector.clear();
-            needReLayoutChildrenCollector.clear();
-            relayoutList.clear();
+            collector.clear();
         }
     };
 })();

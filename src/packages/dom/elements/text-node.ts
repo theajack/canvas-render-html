@@ -38,10 +38,8 @@ export class TextNode extends Node {
         // v = v.replace(/\n/g, '').trim();
         if (v === this._textContent) return;
         this._textContent = v;
-        this._layout._collect(() => {
-            // debugger;
-            this._container.text = v;
-        });
+        this._container.text = v;
+        this._layout._checkParentLayoutChange();
     }
 
     _onParseStart () {
