@@ -23,9 +23,16 @@ const html = /* html*/`
 <div class='d00 c1 c2 c3'>
     <div class='d3'>d3</div>
     <div class='d4'>
+        <div class='d41' id='id_d11'>
+            <div class='d42'>d42</div>
+        </div>
         <div class='d42'>>d42</div>
     </div>
     <div class='d42'>+d42</div>
+    <div class='c1 c2 c3 c4'></div>
+    <span name='aa'>1</span>
+    <span name='aa'>2</span>
+    <span name='bb'>3</span>
 </div>
 `;
 

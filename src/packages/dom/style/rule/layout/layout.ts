@@ -188,7 +188,7 @@ export class Layout extends LayoutBase implements IElementLayout {
     layoutY = 0;
     layoutHeight = 0;
 
-    
+    // 计算子节点layout
     _countNodeLayout (node: Node) {
         const display = node.style.display;
 
@@ -212,7 +212,7 @@ export class Layout extends LayoutBase implements IElementLayout {
             const {width, height, y} = layout;
 
             const x = this.layoutX + width;
-            if (x > (this._element.parentElement?._layout._blockWidth as number)) {
+            if (x > this._blockWidth) {
                 pos.x = 0;
                 pos.y = this.layoutHeight;
                 this.layoutX = width;
