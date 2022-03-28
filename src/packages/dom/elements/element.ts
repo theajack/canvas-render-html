@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 17:20:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-19 21:38:51
+ * @LastEditTime: 2022-03-26 22:13:53
  * @FilePath: /canvas-render-html/src/packages/dom/elements/element.ts
  * @Description: Coding something
  */
@@ -13,17 +13,18 @@ import {TAttributeKey} from '@src/types/attribute';
 import {IElement} from '@src/types/dom';
 import {ECompareResult, EElementName, EElementTagName, ENodeType} from '@src/types/enum';
 import {IJson} from '@src/types/util';
-import {Container, Sprite} from 'pixi.js';
+import {Container} from 'pixi.js';
 import {Attribute} from '../attribute/attribute';
 import {ClassList} from '../attribute/class-list';
 import {parseHtml} from '../parser/parser';
 import {querySelector, querySelectorAll} from '../parser/query-selector';
+import {Background} from '../style/background';
 // import {parseHtml} from '../parser/parser';
 import {Layout} from '../style/rule/layout/layout';
 import {Node} from './node';
 import {TextNode} from './text-node';
 export abstract class Element extends Node implements IElement {
-    _sprite: Sprite;
+    _background: Background;
     nodeType = ENodeType.Element;
 
     _container: Container;
@@ -159,8 +160,7 @@ export abstract class Element extends Node implements IElement {
         super();
         this._container = new Container();
         this._tagName = name.toUpperCase() as EElementTagName;
-        this._sprite = new Sprite();
-        this._container.addChild(this._sprite);
+        this._background = new Background(this);
         this.style = new Style(this);
         this._layout = new Layout(this);
         this.classList = new ClassList(this);

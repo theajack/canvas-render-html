@@ -48,7 +48,6 @@ export abstract class LayoutBase {
         const parentLayout = parent._layout;
 
         const {width, height} = parentLayout;
-
         if (parentLayout._lastHeight !== height || parentLayout._lastWidth !== width) {
             parentLayout._lastHeight = height;
             parentLayout._lastWidth = width;
@@ -59,6 +58,7 @@ export abstract class LayoutBase {
     }
 
     _reLayoutSelf () {
+        // todo 需要relayout子元素
         this.log('_reLayoutSelf');
         const element = this._element;
         const parentLayout = element.parentElement?._layout;

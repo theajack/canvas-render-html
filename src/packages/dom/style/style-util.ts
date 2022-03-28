@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 23:57:32
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-14 23:16:55
+ * @LastEditTime: 2022-03-26 19:08:14
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-util.ts
  * @Description: Coding something
  */
@@ -98,4 +98,27 @@ export function parseCssImportantValue (value?: string) {
         return value.replace(IMPORTANT, '');
     }
     return '';
+}
+
+export function cssColorToHexValue (value: string): number {
+    let result = '';
+    if (value[0] === '#') {
+        result = value.substring(1);
+        if (result.length <= 4) {
+            value = '';
+            for (let i = 0; i < result.length; i++) {
+                value += result[i] + result[i];
+            }
+            result = value;
+        }
+    } else if (value.indexOf('rgb') === 0) {
+        result = value.replace(/rgba?|\(|\)| /g, '').split(',').map(num => {
+            const value = parseInt(num).toString(16);
+            debugger;
+            return (value.length === 1) ? `0${value}` : value;
+        }).join('');
+    } else {
+        return 0;
+    }
+    return ('0x' + result) as unknown as number;
 }

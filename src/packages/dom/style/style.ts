@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 20:05:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-14 23:38:48
+ * @LastEditTime: 2022-03-26 22:15:47
  * @FilePath: /canvas-render-html/src/packages/dom/style/style.ts
  * @Description: Coding something
  */
@@ -93,19 +93,9 @@ export class Style implements IStyleClass {
 
     private _applyStyleIntoPixi (name: TStyleKey) {
         // todo 修改pixi的样式
-        name;
-        // console.log(name);
-
-
-        // todo 待处理layout样式
-        // // ! 对于文本layout样式 非textNode不需要进行
-        // const isTextLayout = isTextRelayoutStyle(name);
-        // if (
-        //     (isTextLayout && node.nodeType === ENodeType.Text)
-        //         || (!isTextLayout && isRelayoutStyle(name))
-        // ) {
-        //     LayoutChangeManager.collectElement(node);
-        // }
+        if (name === 'backgroundColor') {
+            this._element._background.setColor(this._store[name] as string);
+        }
     }
 
     _setStyleAttribute (styleStr: string) {

@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 19:40:38
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 15:18:49
+ * @LastEditTime: 2022-03-26 17:53:34
  * @FilePath: /canvas-render-html/src/packages/dom/style/default-style.ts
  * @Description: Coding something
  */
@@ -21,7 +21,7 @@ const BlockElementTags = [
 
 const DefaultStyle: IDefaultStyle = {
     color: '#000000',
-    backgroundColor: '#ffffff',
+    backgroundColor: '',
     backgroundImage: '',
     fontSize: '14px',
     width: '',

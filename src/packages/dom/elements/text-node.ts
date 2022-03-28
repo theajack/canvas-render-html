@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 16:57:51
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-15 00:14:22
+ * @LastEditTime: 2022-03-26 19:35:20
  * @FilePath: /canvas-render-html/src/packages/dom/elements/text-node.ts
  * @Description: Coding something
  */
@@ -13,7 +13,6 @@ import {TextLayout} from '../style/rule/layout/layout';
 import {TextNodeStyle} from '../style/text-style';
 import {Element} from './element';
 import {Node} from './node';
-
 
 export class TextNode extends Node {
     nodeType = ENodeType.Text;
