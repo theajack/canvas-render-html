@@ -2,44 +2,34 @@
  * @Author: tackchen
  * @Date: 2022-03-26 22:11:34
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-28 22:34:00
+ * @LastEditTime: 2022-03-28 23:00:40
  * @FilePath: /canvas-render-html/src/packages/dom/style/background.ts
  * @Description: Coding something
  */
 
-import {Sprite, Texture} from 'pixi.js';
+import {Graphics} from 'pixi.js';
 import {Element} from '../elements/element';
 import {cssColorToHexValue} from './style-util';
 
 export class Background {
     _element: Element;
-    _sprite: Sprite;
+
+    _grapgics: Graphics;
 
     constructor (element: Element) {
-        this._sprite = new Sprite();
+        this._grapgics = new Graphics();
         this._element = element;
-        this._element._container.addChild(this._sprite);
-        this._clearSize();
-    }
-
-    _clearSize () {
-        this._sprite.height = 0;
-        this._sprite.width = 0;
-    }
-
-    _initSize () {
-        this._clearSize();
-        setTimeout(() => {
-            this._sprite.height = this._element._layout.height;
-            this._sprite.width = this._element._layout.width;
-        }, 0);
+        this._element._container.addChild(this._grapgics);
     }
 
     setColor (color: string) {
-        this._initSize();
-        this._sprite.texture = Texture.WHITE;
         const value = cssColorToHexValue(color);
-        this._sprite.tint = value;
+        console.log(value);
+
+        const {width, height} = this._element._layout;
+
+        this._grapgics.beginFill(0xff0000);
+        this._grapgics.drawRect(0, 0, width, height);
     }
 
     // async setImage () {

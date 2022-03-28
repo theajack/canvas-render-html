@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-02-20 19:36:59
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-19 22:09:42
+ * @LastEditTime: 2022-03-28 22:39:34
  * @FilePath: /canvas-render-html/src/types/style.d.ts
  * @Description: Coding something
  */
@@ -47,7 +47,6 @@ export interface IBoundary extends ISize {
 export interface IStyleBase {
     color: TStyleValue;
     backgroundColor: TStyleValue;
-    backgroundImage: TStyleValue;
     fontSize: TStyleValue;
     width: TStyleValue;
     height: TStyleValue;
@@ -56,6 +55,7 @@ export interface IStyleBase {
     position: TStylePosition;
     left: TStyleValue;
     top: TStyleValue;
+    backgroundImage: TStyleValue;
 }
 
 export interface IStyle extends IStyleBase {
