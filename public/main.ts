@@ -20,6 +20,7 @@ import {document} from '@src/packages/dom/document';
 */
 
 const html = /* html*/`
+<div style='background-color: #ff4' id='d41'>d41</div>
 <div style='background-color: #ff4' id='d42'>d42</div>
 `;
 

@@ -2,7 +2,7 @@
  * @Author: tackchen
  * @Date: 2022-03-26 22:11:34
  * @LastEditors: tackchen
- * @LastEditTime: 2022-03-28 23:00:40
+ * @LastEditTime: 2022-03-31 08:30:51
  * @FilePath: /canvas-render-html/src/packages/dom/style/background.ts
  * @Description: Coding something
  */
@@ -24,9 +24,9 @@ export class Background {
 
     setColor (color: string) {
         const value = cssColorToHexValue(color);
-        console.log(value);
 
         const {width, height} = this._element._layout;
+        console.log(value, width, height);
 
         this._grapgics.beginFill(0xff0000);
         this._grapgics.drawRect(0, 0, width, height);

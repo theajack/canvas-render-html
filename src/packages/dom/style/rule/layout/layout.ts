@@ -11,8 +11,8 @@ import {Node} from '@src/packages/dom/elements/node';
 import {TextNode} from '@src/packages/dom/elements/text-node';
 import {LayoutChangeManager} from '@src/packages/render/render-manager';
 import {IElementLayout, ILayout} from '@src/types/style';
-import {IPosition} from '@src/types/util';
-import {Text} from 'pixi.js';
+import {IPosition, ISize} from '@src/types/util';
+import {Text, TextMetrics} from 'pixi.js';
 // import {ENodeType} from '@src/types/enum';
 import {Element} from '../../../elements/element';
 import {countStyleLength} from '../../style-util';
@@ -86,6 +86,29 @@ export abstract class LayoutBase {
 
 export class TextLayout extends LayoutBase implements ILayout {
     protected _element: TextNode;
+    get width () {
+        const container = (this._element._container as Text);
+        return (container.text) ? container.width : 0;
+    }
+    get height () {
+        const container = this._element._container as Text;
+        return (container.text) ? container.height : 0;
+    }
+
+    _measureText (text: string): ISize {
+        if (!text) {
+            return {width: 0, height: 0};
+        }
+        const textMetrics = TextMetrics.measureText(text, (this._element._container as Text).style as any);
+        return {
+            width: textMetrics.width,
+            height: textMetrics.height
+        };
+    }
+
+    // let style = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'})
+    // let textMetrics = PIXI.TextMetrics.measureText('Your text', style)
+
     get x () {return this._element._container.x;}
     get y () {return this._element._container.y;}
     left = 0;
@@ -94,16 +117,23 @@ export class TextLayout extends LayoutBase implements ILayout {
 
 // element自身的实际layout尺寸
 export class Layout extends LayoutBase implements IElementLayout {
+    constructor (element: Element) {
+        super(element);
+        if (element.style.display === 'block') {
+            this._width = this._countBlockParentWidth();
+        }
+    }
     
     protected _element: Element;
+
+    _widthStack: number[] = [];
+    _width = 0;
 
     get width (): number {
         const style = this._element.style;
         const display = style.display;
         if (display === 'none') {
             return 0;
-        } else if (display === 'inline') {
-            return this._element._container.width;
         }
 
         const width = style.width;
@@ -111,39 +141,81 @@ export class Layout extends LayoutBase implements IElementLayout {
             return countStyleLength({
                 value: width,
                 getReferLength: () => this._countBlockParentWidth(),
-                getDefaultLength: () => this._element._container.width
+                getDefaultLength: () => this._width,
             });
         } else {
             if (display === 'inline-block') {
-                return this._element._container.width;
+                return this._width;
             } else {
                 return this._countBlockParentWidth();
             }
         }
+
+        // const style = this._element.style;
+        // const display = style.display;
+        // if (display === 'none') {
+        //     return 0;
+        // } else if (display === 'inline') {
+        //     return this._element._container.width;
+        // }
+
+        // const width = style.width;
+        // if (width) {
+        //     return countStyleLength({
+        //         value: width,
+        //         getReferLength: () => this._countBlockParentWidth(),
+        //         getDefaultLength: () => this._element._container.width
+        //     });
+        // } else {
+        //     if (display === 'inline-block') {
+        //         return this._element._container.width;
+        //     } else {
+        //         return this._countBlockParentWidth();
+        //     }
+        // }
     }
 
     get blockParentWidth () {
         return this._countBlockParentWidth();
     }
 
+    _heightStack: number[] = [];
+    _height = 0;
+
     get height () {
         const style = this._element.style;
         const display = style.display;
         if (display === 'none') {
             return 0;
-        } else if (display === 'inline') {
-            return this._element._container.height;
         }
         const height = style.height;
         if (height) {
             return countStyleLength({
                 value: height,
                 getReferLength: () => this._countBlockParentHeight(),
-                getDefaultLength: () => this._element._container.height
+                getDefaultLength: () => this._height,
             });
         } else {
-            return this._element._container.height;
+            return this._height;
         }
+
+        // const style = this._element.style;
+        // const display = style.display;
+        // if (display === 'none') {
+        //     return 0;
+        // } else if (display === 'inline') {
+        //     return this._element._container.height;
+        // }
+        // const height = style.height;
+        // if (height) {
+        //     return countStyleLength({
+        //         value: height,
+        //         getReferLength: () => this._countBlockParentHeight(),
+        //         getDefaultLength: () => this._element._container.height
+        //     });
+        // } else {
+        //     return this._element._container.height;
+        // }
     }
 
     get left () {
@@ -153,7 +225,7 @@ export class Layout extends LayoutBase implements IElementLayout {
         return countStyleLength({
             value: this._element.style.left,
             getReferLength: () => this._countBlockParentWidth(),
-            getDefaultLength: () => this._element._container.width
+            getDefaultLength: () => this._width
         });
     }
     get top () {
@@ -163,7 +235,7 @@ export class Layout extends LayoutBase implements IElementLayout {
         return countStyleLength({
             value: this._element.style.top,
             getReferLength: () => this._countBlockParentHeight(),
-            getDefaultLength: () => this._element._container.height
+            getDefaultLength: () => this._height
         });
     }
     
@@ -177,6 +249,7 @@ export class Layout extends LayoutBase implements IElementLayout {
         return y - this.top;
     }
 
+    // todo offset size
     get offsetHeight () {
         return 0;
     }
@@ -184,6 +257,7 @@ export class Layout extends LayoutBase implements IElementLayout {
         return 0;
     }
 
+    // layoutX, layoutY 记录的是 下一个元素放置的位置
     layoutX = 0;
     layoutY = 0;
     layoutHeight = 0;
@@ -196,20 +270,24 @@ export class Layout extends LayoutBase implements IElementLayout {
         if (node.style.position !== 'relative' || display === 'none') return;
         
         const layout = node._layout;
+        const {width, height} = layout;
         const pos: IPosition = {
             x: this.layoutX,
             y: this.layoutY,
         };
         if (display === 'block') {
-            const height = layout.height;
             pos.x = 0;
             pos.y = this.layoutHeight;
             this.layoutX = 0;
             this.layoutY = this.layoutHeight + height;
             this.layoutHeight += height;
+
+            if (this._width < width) this._width = width;
+            this._height += height;
+
         } else if (display === 'inline' || display === 'inline-block') {
             // 暂时与inline-block一样处理
-            const {width, height, y} = layout;
+            const {y} = layout;
 
             const x = this.layoutX + width;
             if (x > this._blockWidth) {
@@ -218,11 +296,20 @@ export class Layout extends LayoutBase implements IElementLayout {
                 this.layoutX = width;
                 this.layoutY = this.layoutHeight;
                 this.layoutHeight += height;
+
+                if (this._width < width) this._width = width; // ? bug
+                this._height += height;
+
             } else {
                 this.layoutX += width;
                 const targetHeight = y + height;
                 if (targetHeight > this.layoutHeight) {
                     this.layoutHeight = targetHeight;
+                }
+
+                this._width += width;
+                if (targetHeight > this._height) {
+                    this._height = targetHeight;
                 }
             }
         }
