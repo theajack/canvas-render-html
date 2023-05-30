@@ -1,6 +1,6 @@
 {
     "name": "canvas-render-html",
-    "version": "0.0.1-alpha",
+    "version": "0.0.1",
     "description": "Render HTML code with Canvas",
     "main": "index.min.js",
     "unpkg": "canvas-render-html.min.js",

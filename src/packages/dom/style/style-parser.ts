@@ -1,8 +1,8 @@
 /*
  * @Author: tackchen
  * @Date: 2022-02-22 21:55:03
- * @LastEditors: tackchen
- * @LastEditTime: 2022-03-12 14:05:39
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2023-05-30 08:36:06
  * @FilePath: /canvas-render-html/src/packages/dom/style/style-parser.ts
  * @Description: Coding something
  */
@@ -12,7 +12,7 @@ import {IJson} from '@src/types/util';
 import {Declaration, parse, Rule} from 'css';
 import {parseCssImportantValue, transformCssProperty} from './style-util';
 
-(window as any).parse = parse;
+// (window as any).parse = parse;
 
 // parse 单个style样式
 export function parseStyleAttribute (styleStr: string): IStyleOptions {
@@ -81,4 +81,4 @@ function processImportantStyles (styles: IStyleOptions[]): IStyleOptions {
 }
 
 
-(window as any).parseCssBase = parseCss;
+// (window as any).parseCssBase = parseCss;

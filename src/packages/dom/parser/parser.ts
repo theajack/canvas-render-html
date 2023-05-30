@@ -56,4 +56,4 @@ export function parseHtml (
     parser.end();
     return parentElement;
 }
-(window as any).parse = Parser;
+// (window as any).parse = Parser;

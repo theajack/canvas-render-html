@@ -1,8 +1,8 @@
 /*
  * @Author: tackchen
  * @Date: 2022-02-20 16:05:23
- * @LastEditors: tackchen
- * @LastEditTime: 2022-03-13 20:01:42
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2023-05-30 08:26:42
  * @FilePath: /canvas-render-html/src/index.ts
  * @Description: Coding something
  */
@@ -80,3 +80,4 @@ function clearRenderContext () {
 }
 (window as any).clearRenderContext = clearRenderContext;
 (window as any).getContext = getContext;
+(window as any).RenderHTML = renderHtmlToCanvas;

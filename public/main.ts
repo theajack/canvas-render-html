@@ -1,4 +1,10 @@
-import renderHtmlToCanvas from '../src';
+/*
+ * @Author: chenzhongsheng
+ * @Date: 2022-02-27 00:12:08
+ * @Description: Coding something
+ */
+// import renderHtmlToCanvas from '../src';
+import renderHtmlToCanvas from '../npm';
 import {document} from '@src/packages/dom/document';
 
 (window as any).doc = document;
@@ -20,6 +26,7 @@ import {document} from '@src/packages/dom/document';
 */
 
 const html = /* html*/`
+<div style='background-color: #ff4' id='d41'>d41</div>
 <div style='background-color: #ff4' id='d42'>d42</div>
 `;
 
