@@ -11,10 +11,11 @@
         body{
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
         *{
             box-sizing: border-box;
-            font-family: Menlo, Monaco, "Courier New", monospace;
+            /* font-family: Menlo, Monaco, "Courier New", monospace; */
         }
         #container{
             display: flex;
@@ -22,16 +23,10 @@
             box-sizing: border-box;
         }
         #code{
-            background-color: #444;
-            color: #fff;
-            padding: 10px;
-            font-size: 16px;
-            outline: none;
-            border: none;
-            box-sizing: border-box;
             width: 100%;
-            height: 100%;
-            padding-top: 50px;
+            margin-top: 40px;
+            border-radius: 0;
+            border: none;
         }
         #canvasDiv{
             flex: 1;
@@ -72,30 +67,39 @@
     <div id="container">
         <div id="codeDiv">
             <div id="title">
-                <span id="titleText">Canvas Render HTML(0.0.1-aplha)</span>
-                <button onclick="rendering()">Rendering</button>
+                <span id="titleText">Canvas Render HTML(0.0.1)</span>
+                <button onclick="rendering()">Submit Render</button>
             </div>
-            <textarea id='code'></textarea>
+            <div id='code'></div>
+            <!-- <textarea></textarea> -->
         </div>
         <div id="canvasDiv">
             <canvas id="canvas"></canvas>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/tc-editor"></script>
+    <!-- <script src="http://localhost:8080/bundle.js"></script> -->
     <!-- <script src="./npm/canvas-render-html.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-render-html/canvas-render-html.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-render-html"></script>
     <script>
 
         var html = /* html*/`<div style='color:#222;font-size:20px'>
   Canvas Render HTML(
-  <span style='color: #00e'>0.0.1-aplha</span>
+  <span style='color: #00e'>0.0.1</span>
   )
 </div>
 <span style='color:#f44;font-size:16px'>
   Hello World!
 </span>`
-            document.getElementById('code').value = html
-        document.body.style.height = window.innerHeight+'px';
         
+        const editor = new TCEditor({
+            el: '#code',
+            buttons: false,
+            code: html,
+            width: '100%',
+            height: window.innerHeight - 40 + 'px',
+        });
+
         const body = RenderHTML({
             html: html,
             canvas: document.getElementById('canvas'),
@@ -104,8 +108,7 @@
         });
 
         function rendering(){
-            const value = document.getElementById('code').value;
-            body.innerHTML = value;
+            body.innerHTML = editor.code();
         }
     </script>
 </body>
