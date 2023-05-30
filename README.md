@@ -4,7 +4,7 @@
 
 A project that uses Canvas to render HTML code, currently in development 0.0.1-alpha
 
-Simple version [experience address](https://theajack.gitee.io/canvas-render-html)
+Simple version [experience address](https://theajack.github.io/canvas-render-html)
 
 Goals and application scenarios:
 
